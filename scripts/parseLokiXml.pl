@@ -1,14 +1,50 @@
 #!/usr/bin/perl
 #-------------------------------------------------------------------------------
-# Parser for Loki XML files.
 #
-# Copyright Ted DeLoggio
+# This file is part of daocitemdb.
+#
+# daocitemdb is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# daocitemdb is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# daocitemdb.  If not, see <http://www.gnu.org/licenses/>.
+#
+# daocitemdb Copyright (c) 2014 Ted DeLoggio
+#
+#-------------------------------------------------------------------------------
+#
+# This script will extract and display some relevant fields from a Loki item 
+# XML file.  It is meant to be used for testing only.
+#
 #-------------------------------------------------------------------------------
 
 use strict;
 use warnings;
 use XML::DOM;
 
+#-------------------------------------------------------------------------------
+# getElementValue
+#
+# This subroutine uses XML::DOM to search for and extract the value of a
+# XML::DOM::Text element with the specified name, living under the specified
+# XML::DOM::Node
+#
+# The first parameter to this subroutine is an XML::DOM::Node.  It is expected 
+# that the specified element name lives under this node.
+#
+# The second parameter to this subroutine is the name of the element to search 
+# for
+#
+# The subroutine will return the text value of the first element under the 
+# specified node matching the specified name, or an empty string if the 
+# element name wasn't found.
+#-------------------------------------------------------------------------------
 sub getElementValue
 {
 	# the first parameter should be a XML::DOM::Node under which the element to 
@@ -18,21 +54,32 @@ sub getElementValue
 	# the second parameter should be the name of the element to search for
 	my $elementName = $_[1];
 
+	# get a list of nodes matching the element name
 	my $nodeList = $nodeToSearch->getElementsByTagName($elementName);
-	if($nodeList->getLength == 1)
+
+	# hopefully there is at least one result
+	if($nodeList->getLength >= 1)
 	{
+		# we're only going to look at the first mathing element
 		my $node = $nodeList->item(0);
+
+		# make sure $node is a real thing
 		if(defined $node)
 		{
+			# grab the first child of $node (that's where the text value is)
 			my $child = $node->getFirstChild;
+
+			# make sure $child is a real thing
 			if(defined $child)
 			{
+				# grab the text value and return it
 				my $nodeText = $child->getNodeValue;
 				return $nodeText;
 			}
 		}
 	}
 
+	# didn't find what we were looking for, return an empty string
 	return "";
 }
 
