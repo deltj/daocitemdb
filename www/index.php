@@ -4,22 +4,50 @@
 </head>
 <body>
 <?php
-//$dbhost = $_SERVER['RDS_HOSTNAME'];
-//$dbport = $_SERVER['RDS_PORT'];
-//$dbname = $_SERVER['RDS_DB_NAME'];
-//$dbuser = $_SERVER['RDS_USERNAME'];
-//$dbpass = $_SERVER['RDS_PASSWORD'];
+require('creds.php');
 
-$link = mysqli_connect($dbhost,
+$mysqli = new mysqli($dbhost,
 	$dbuser, 
 	$dbpass,
 	$dbname,
 	$dbport);
 
 // check for connection error
-if ($link->connect_error) {
+if (mysqli_connect_errno()) {
 	echo "connect error!";
 }
+
+$sql = "SELECT * FROM item;";
+
 ?>
+<table border=1>
+<tr>
+<td>item_id</td>
+<td>name</td>
+<td>realm</td>
+<td>slot</td>
+<td>level</td>
+</tr>
+<?php
+if($mysqli->multi_query($sql)) {
+	do {
+		if($result = $mysqli->use_result()) {
+			while($row = $result->fetch_row()) {
+				print "<tr>";
+				printf("<td>%d</td>", $row[0]);
+				printf("<td>%s</td>", $row[1]);
+				printf("<td>%s</td>", $row[2]);
+				printf("<td>%s</td>", $row[3]);
+				printf("<td>%d</td>", $row[4]);
+				print "</tr>";
+			}
+			$result->close();
+		}
+	} while($mysqli->next_result());
+}
+
+$mysqli->close();
+?>
+</table>
 </body>
 </html>
