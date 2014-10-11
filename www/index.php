@@ -32,13 +32,14 @@ $sql = "SELECT * FROM item;";
 if($mysqli->multi_query($sql)) {
 	do {
 		if($result = $mysqli->use_result()) {
-			while($row = $result->fetch_row()) {
+			while($row = $result->fetch_assoc()) {
 				print "<tr>";
-				printf("<td>%d</td>", $row[0]);
-				printf("<td><a href=\"showitem.php?id=%d\">%s</a></td>", $row[0], $row[1]);
-				printf("<td>%s</td>", $row[2]);
-				printf("<td>%s</td>", $row[3]);
-				printf("<td>%d</td>", $row[4]);
+				printf("<td>%d</td>", $row["item_id"]);
+				printf("<td><a href=\"showitem.php?id=%d\">%s</a></td>",
+						$row["item_id"], $row["name"]);
+				printf("<td>%s</td>", $row["realm"]);
+				printf("<td>%s</td>", $row["slot"]);
+				printf("<td>%d</td>", $row["level"]);
 				print "</tr>";
 			}
 			$result->close();

@@ -45,6 +45,7 @@ if(defined $dbh)
 	print "creating item table\n";
 	$sql = "CREATE TABLE item (" .
 		"item_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
+		"ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP," .
 		"name VARCHAR(100)," .
 		"realm VARCHAR(10)," .
 		"slot VARCHAR(10)," .
