@@ -60,7 +60,9 @@ $(document).ready(function() {
 
 					// add a cell to the row for this item's name
 					var cell = row.insertCell(0);
-					cell.innerHTML = result[i].name;
+					cell.innerHTML = "<a href=\"showitem.php?id=" +
+						result[i].item_id + "\">" + result[i].name +
+						"</a>";
 				}
 			});
 		}
