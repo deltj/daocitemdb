@@ -35,7 +35,7 @@ if($mysqli->multi_query($sql)) {
 			while($row = $result->fetch_row()) {
 				print "<tr>";
 				printf("<td>%d</td>", $row[0]);
-				printf("<td>%s</td>", $row[1]);
+				printf("<td><a href=\"showitem.php?id=%d\">%s</a></td>", $row[0], $row[1]);
 				printf("<td>%s</td>", $row[2]);
 				printf("<td>%s</td>", $row[3]);
 				printf("<td>%d</td>", $row[4]);
