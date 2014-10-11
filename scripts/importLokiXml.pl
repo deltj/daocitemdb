@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 #-------------------------------------------------------------------------------
 #
 # This file is part of daocitemdb.
@@ -85,7 +85,15 @@ sub getElementValue
 }
 
 my $parser = new XML::DOM::Parser;
-my $doc = $parser->parsefile("/var/itemdb/uploads/Mystic\ Ivybound\ Sleeves_50.xml");
+
+my $numargs = $#ARGV + 1;
+if($numargs != 1) {
+	print "specify an XML file";
+	exit;
+}
+
+#my $doc = $parser->parsefile("/var/itemdb/uploads/Mystic\ Ivybound\ Sleeves_50.xml");
+my $doc = $parser->parsefile($ARGV[0]);
 
 # get a NodeList of descendent elements with the name "SCItem"
 # (this should be the root node in a Loki item XML document)
