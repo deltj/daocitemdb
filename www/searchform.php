@@ -98,6 +98,22 @@ function searchCallback(data, status) {
 	}
 }
 
+function clearForm() {
+	var slot = document.getElementById("slot");
+	slot.options[0].selected = true;
+
+	var bonus1 = document.getElementById("bonus1");
+	bonus1.options[0].selected = true;
+
+	var itemname = document.getElementById("itemname");
+	itemname.value = "";
+
+	var table = document.getElementById("results");
+	for(var j=table.rows.length-1; j>=0; j--) {
+		table.deleteRow(j);
+	}
+}
+
 // perform some initialization stuff after the document is loaded
 $(document).ready(function() {
 	// add a handler to the itemname textbox's keyup event.  this is a 
@@ -107,6 +123,7 @@ $(document).ready(function() {
 
 	document.getElementById("bonus1").onchange = function() {doSearch()};
 	document.getElementById("slot").onchange = function() {doSearch()};
+	document.getElementById("clear").onclick = function() {clearForm()};
 });
 </script>
 
@@ -146,6 +163,7 @@ if($result = $mysqli->query($sql)) {
 <tr><td>Name:</td><td><input type="text" name="itemname" id="itemname"></td></tr>
 </table>
 </form>
+<button type="button" id="clear">Clear</button>
 
 <!-- this table will store the query result -->
 <table id="results">
