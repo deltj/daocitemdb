@@ -29,6 +29,8 @@ use warnings;
 use XML::DOM;
 use DBI;
 
+my $parser = new XML::DOM::Parser;
+
 #-------------------------------------------------------------------------------
 # getElementValue
 #
@@ -84,115 +86,122 @@ sub getElementValue
 	return "";
 }
 
-my $parser = new XML::DOM::Parser;
+sub importLokiXmlFile {
 
-my $numargs = $#ARGV + 1;
-if($numargs != 1) {
-	print "specify an XML file";
-	exit;
-}
+	my $doc = $parser->parsefile($_[0]);
 
-#my $doc = $parser->parsefile("/var/itemdb/uploads/Mystic\ Ivybound\ Sleeves_50.xml");
-my $doc = $parser->parsefile($ARGV[0]);
+	# get a NodeList of descendent elements with the name "SCItem"
+	# (this should be the root node in a Loki item XML document)
+	my $nodes = $doc->getElementsByTagName("SCItem");
+	my $n = $nodes->getLength;
 
-# get a NodeList of descendent elements with the name "SCItem"
-# (this should be the root node in a Loki item XML document)
-my $nodes = $doc->getElementsByTagName("SCItem");
-my $n = $nodes->getLength;
-
-for (my $i = 0; $i < $n; $i++)
-{
-	# get the item at position i out of the NodeList
-	my $node = $nodes->item($i);
-
-	my $name = getElementValue($node, "ItemName");
-	print "ItemName: $name\n";
-
-	my $realm = getElementValue($node, "Realm");
-	print "Realm: $realm\n";
-
-	my $level = getElementValue($node, "Level");
-	print "Level: $level\n";
-
-	my $location = getElementValue($node, "Location");
-	print "Location: $location\n";
-
-	my $dbh = DBI->connect('DBI:mysql:mysql_read_default_file=./my.conf',undef,undef)
-		or die "Failed to connect: " . $DBI::errstr;
-	print "DBI->connect success!\n";
-
-	# sql statement to add this item to the item table
-	my $sql = "INSERT INTO item (name, realm, slot, level) " .
-	   "VALUES (\"$name\", \"$realm\", \"$location\", $level);";
-	# print "SQL statement for this item: $sql\n";
-
-	print "adding item to table\n";
-	$dbh->do($sql);
-
-	# get item_id for the new item
-	$sql = "SELECT item_id FROM item WHERE name = \"$name\";";
-	my $qh = $dbh->prepare($sql);
-	$qh->execute();
-	my @row = $qh->fetchrow();
-	my $itemid = $row[0];
-	print "using item_id $itemid for item \"$name\"\n";
-
-	# process all of the bonus values
-	my $dropItemNodeList = $node->getElementsByTagName("DROPITEM");
-	if($dropItemNodeList->getLength == 1)
+	for (my $i = 0; $i < $n; $i++)
 	{
-		my $slotNodeList = $dropItemNodeList->item(0)->getElementsByTagName("SLOT");
-		my $m = $slotNodeList->getLength;
-		
-		for (my $j = 0; $j < $m; $j++)
+		# get the item at position i out of the NodeList
+		my $node = $nodes->item($i);
+
+		my $name = getElementValue($node, "ItemName");
+		print "ItemName: $name\n";
+
+		my $realm = getElementValue($node, "Realm");
+		print "Realm: $realm\n";
+
+		my $level = getElementValue($node, "Level");
+		print "Level: $level\n";
+
+		my $location = getElementValue($node, "Location");
+		print "Location: $location\n";
+
+		my $dbh = DBI->connect('DBI:mysql:mysql_read_default_file=./my.conf',
+				undef,undef)
+			or die "Failed to connect: " . $DBI::errstr;
+		#print "DBI->connect success!\n";
+
+		# sql statement to add this item to the item table
+		my $sql = "INSERT INTO item (name, realm, slot, level) " .
+		   "VALUES (\"$name\", \"$realm\", \"$location\", $level);";
+		# print "SQL statement for this item: $sql\n";
+
+		print "adding item to table\n";
+		$dbh->do($sql);
+
+		# get item_id for the new item
+		$sql = "SELECT item_id FROM item WHERE name = \"$name\";";
+		my $qh = $dbh->prepare($sql);
+		$qh->execute();
+		my @row = $qh->fetchrow();
+		my $itemid = $row[0];
+		print "using item_id $itemid for item \"$name\"\n";
+
+		# process all of the bonus values
+		my $dropItemNodeList = $node->getElementsByTagName("DROPITEM");
+		if($dropItemNodeList->getLength == 1)
 		{
-			my $slotNode = $slotNodeList->item($j);
-			my $bonus = getElementValue($slotNode, "Effect");
-			my $amount = getElementValue($slotNode, "Amount");
+			my $slotNodeList = $dropItemNodeList->item(0)->getElementsByTagName("SLOT");
+			my $m = $slotNodeList->getLength;
+		
+			for (my $j = 0; $j < $m; $j++)
+			{
+				my $slotNode = $slotNodeList->item($j);
+				my $bonus = getElementValue($slotNode, "Effect");
+				my $amount = getElementValue($slotNode, "Amount");
 
-			# ignore empty bonuses
-			if(length($bonus) > 0) {
-				# get the bonus id for this bonus
-				$sql = "SELECT bonus_id FROM bonus WHERE name = \"$bonus\";";
+				# ignore empty bonuses
+				if(length($bonus) > 0) {
+					# get the bonus id for this bonus
+					$sql = "SELECT bonus_id FROM bonus WHERE name = \"$bonus\";";
 
-				$qh = $dbh->prepare($sql);
-				$qh->execute();
-				@row = $qh->fetchrow();
-				my $rowcount = @row;
-				
-				my $bonusid = 0;
-
-				# there should be exactly 1 row
-				if($rowcount == 1) {
-					# this bonus exists, get the id
-					$bonusid = $row[0];
-					print "using bonus_id $bonusid for bonus \"$bonus\"\n";
-				} else {
-					# this bonus does not exist, add it
-					$dbh->do("INSERT INTO bonus (name) VALUES (\"$bonus\");");
-					print "adding new bonus \"$bonus\"\n";
-
-					# re-query for the bonus id
-					$dbh->prepare($sql);
+					$qh = $dbh->prepare($sql);
 					$qh->execute();
 					@row = $qh->fetchrow();
-					$bonusid = $row[0];
-					print "using bonus_id $bonusid for bonus \"$bonus\"\n";
+					my $rowcount = @row;
+				
+					my $bonusid = 0;
+
+					# there should be exactly 1 row
+					if($rowcount == 1) {
+						# this bonus exists, get the id
+						$bonusid = $row[0];
+						print "using bonus_id $bonusid for bonus \"$bonus\"\n";
+					} else {
+						# this bonus does not exist, add it
+						$dbh->do("INSERT INTO bonus (name) VALUES (\"$bonus\");");
+						print "adding new bonus \"$bonus\"\n";
+
+						# re-query for the bonus id
+						$dbh->prepare($sql);
+						$qh->execute();
+						@row = $qh->fetchrow();
+						$bonusid = $row[0];
+						print "using bonus_id $bonusid for bonus \"$bonus\"\n";
+					}
+
+					# update the 3nf table for this item/bonus
+					$sql = "INSERT INTO item_bonuses (item_id, bonus_id, amount) " .
+						"VALUES ($itemid, $bonusid, $amount);";
+					$dbh->do($sql);
+					print "adding item ($itemid) bonus ($bonusid) amount ($amount) " .
+						"to item_bonuses";
+
+					print "Bonus $j: $amount $bonus\n";
+				} else {
+					print "ignoring empty bonus in slot $j\n";
 				}
-
-				# update the 3nf table for this item/bonus
-				$sql = "INSERT INTO item_bonuses (item_id, bonus_id, amount) " .
-					"VALUES ($itemid, $bonusid, $amount);";
-				$dbh->do($sql);
-				print "adding item ($itemid) bonus ($bonusid) amount ($amount) " .
-					"to item_bonuses";
-
-				print "Bonus $j: $amount $bonus\n";
-			} else {
-				print "ignoring empty bonus in slot $j\n";
 			}
 		}
 	}
-	
-	print "done!\n";
 }
+
+my $numargs = $#ARGV + 1;
+if($numargs < 1) {
+	print "specify at least one XML file\n";
+	exit;
+}
+
+print "$numargs files to import...\n";
+
+foreach my $file (@ARGV) {
+	importLokiXmlFile($file);
+}
+
+print "done!\n";
