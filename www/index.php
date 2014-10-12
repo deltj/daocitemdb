@@ -1,6 +1,7 @@
 <!doctype HTML>
 <html>
 <head>
+<link rel="stylesheet" href="css.css" type="text/css">
 </head>
 <body>
 <?php
@@ -20,13 +21,12 @@ if (mysqli_connect_errno()) {
 $sql = "SELECT * FROM item;";
 
 ?>
-<table border=1>
+<table id="results">
 <tr>
-<td>item_id</td>
-<td>name</td>
-<td>realm</td>
-<td>slot</td>
-<td>level</td>
+<td id="results">Name</td>
+<td id="results">Realm</td>
+<td id="results">Slot</td>
+<td id="results">Level</td>
 </tr>
 <?php
 if($mysqli->multi_query($sql)) {
@@ -34,12 +34,11 @@ if($mysqli->multi_query($sql)) {
 		if($result = $mysqli->use_result()) {
 			while($row = $result->fetch_assoc()) {
 				print "<tr>";
-				printf("<td>%d</td>", $row["item_id"]);
-				printf("<td><a href=\"showitem.php?id=%d\">%s</a></td>",
+				printf("<td id=\"results\"><a href=\"showitem.php?id=%d\">%s</a></td>",
 						$row["item_id"], $row["name"]);
-				printf("<td>%s</td>", $row["realm"]);
-				printf("<td>%s</td>", $row["slot"]);
-				printf("<td>%d</td>", $row["level"]);
+				printf("<td id=\"results\">%s</td>", $row["realm"]);
+				printf("<td id=\"results\">%s</td>", $row["slot"]);
+				printf("<td id=\"results\">%d</td>", $row["level"]);
 				print "</tr>";
 			}
 			$result->close();

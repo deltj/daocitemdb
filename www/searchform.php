@@ -15,8 +15,8 @@ if (mysqli_connect_errno()) {
 ?>
 <html>
 <head>
+<link rel="stylesheet" href="css.css" type="text/css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
 <script>
 // this function serializes the search form data and sends it to the back end
 // search processor (search.php)
@@ -35,10 +35,10 @@ function doSearch() {
 
 	// if the form is empty, clear the result table
 	if(slot.length == 0 && bonus1id == 0 && itemname.length == 0) {
-		console.log("clearing result table");
+		//console.log("clearing result table");
 
 		// get a handle to the result table
-		var table = document.getElementById("resulttable");
+		var table = document.getElementById("results");
 
 		// form is empty, clear the table
 		for(var j=table.rows.length-1; j>=0; j--) {
@@ -51,7 +51,7 @@ function doSearch() {
 		// serialize the search parameters so they can be sent to the 
 		// back end search processor
 		var searchparams = $("form").serialize();
-		console.log(searchparams);
+		//console.log(searchparams);
 
 		// post the search parameters to search.php.  if matching items
 	   	// are found, the result will be an array of JSON objects.
@@ -74,7 +74,7 @@ function searchCallback(data, status) {
 	//console.log(result.length);
 
 	// get a handle to the result table
-	var table = document.getElementById("resulttable");
+	var table = document.getElementById("results");
 
 	// first delete all rows from the table
 	for(var j=table.rows.length-1; j>=0; j--) {
@@ -93,6 +93,8 @@ function searchCallback(data, status) {
 		cell.innerHTML = "<a href=\"showitem.php?id=" +
 			result[i].item_id + "\">" + result[i].name +
 			"</a>";
+		//cell.className="results";
+		cell.setAttribute("id","results");
 	}
 }
 
@@ -111,8 +113,9 @@ $(document).ready(function() {
 </head>
 <body>
 <form>
+<table border="0">
 
-Slot: <select name="slot" id="slot">
+<tr><td>Slot:</td><td><select name="slot" id="slot">
 <option value="">-</option>
 <?php
 $sql = "SELECT DISTINCT(slot) as slot FROM item;";
@@ -124,9 +127,9 @@ if($result = $mysqli->query($sql)) {
 	}
 }
 ?>
-</select><br />
+</select></td></tr>
 
-Bonus: <select name="bonus1" id="bonus1">
+<tr><td>Bonus:</td><td><select name="bonus1" id="bonus1">
 <option value="0">-</option>
 <?php
 $sql = "SELECT * FROM bonus;";
@@ -138,13 +141,14 @@ if($result = $mysqli->query($sql)) {
 	}
 }
 ?>
-</select><br />
+</select></td></tr>
 
-Name: <input type="text" name="itemname" id="itemname"><br />
+<tr><td>Name:</td><td><input type="text" name="itemname" id="itemname"></td></tr>
+</table>
 </form>
 
 <!-- this table will store the query result -->
-<table id="resulttable">
+<table id="results">
 </table>
 
 </body>

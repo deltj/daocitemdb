@@ -1,0 +1,39 @@
+body {
+	color: #EEEEEE;
+	background-color: #000000;
+}
+
+a:link {
+	color: #EEEEEE;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #EEEEEE;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #EEEEEE;
+	text-decoration: underline;
+}
+
+a:active {
+	color: #EEEEEE;
+	text-decoration: none;
+}
+
+table#results {
+	border-collapse: collapse;
+	border: 1px solid #333333;
+}
+
+td#results {
+	border-top: 1px solid #333333;
+	border-bottom: 1px solid #333333;
+	padding: 3px;
+}
+
+td#show {
+	padding: 5px;
+}

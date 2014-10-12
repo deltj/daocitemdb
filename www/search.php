@@ -36,13 +36,25 @@ if(strlen($name) > 0) {
 		// item name and bonus id are valid
 		if(strlen($slot) > 0) {
 			// item name, bonus, and slot are valid
+			$sql = "SELECT item.item_id, item.name " .
+				"FROM item_bonuses ".
+				"INNER JOIN item ON item_bonuses.item_id = item.item_id " .
+				"WHERE item_bonuses.bonus_id = $bonus1id AND item.slot = '$slot' " .
+				"AND item.name LIKE '%$name%';";
 		} else {
 			// item name and bonus are valid
+			$sql = "SELECT item.item_id, item.name " .
+				"FROM item_bonuses " .
+				"INNER JOIN item ON item_bonuses.item_id = item.item_id " .
+				"WHERE item_bonuses.bonus_id = $bonus1id AND item.name LIKE '%$name%';";
 		}
 	} else {
 		// item name is valid
 		if(strlen($slot) > 0) {
 			// item name and slot are valid
+			$sql = "SELECT item_id, name " .
+				"FROM item " .
+				"WHERE slot = '$slot' AND name LIKE '%$name%';";
 		} else {
 			// item name is valid
 			$sql = "SELECT item_id, name " .

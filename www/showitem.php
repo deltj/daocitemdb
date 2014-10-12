@@ -1,6 +1,7 @@
 <!doctype HTML>
 <html>
 <head>
+<link rel="stylesheet" href="css.css" type="text/css">
 </head>
 <body>
 <?php
@@ -24,53 +25,43 @@ $sql = "SELECT item.*, bonus.name as bonusname, item_bonuses.amount as amount " 
 	"INNER JOIN bonus ON bonus.bonus_id = item_bonuses.bonus_id " .
 	"WHERE item.item_id=$item_id;";
 ?>
-<table border=1>
+<table id="results"> 
 <?php
 if($result = $mysqli->query($sql)) {
 	$row = $result->fetch_assoc();
 
 	print "<tr>";
-	print "<td>item_id</td>";
-	printf("<td>%d</td>", $row["item_id"]);
-	print "</tr>";
-
-	print "<tr>";
-	print "<td>name</td>";
+	print "<td id=\"show\">Name</td>";
 	printf("<td>%s</td>", $row["name"]);
 	print "</tr>";
 	
 	print "<tr>";
-	print "<td>realm</td>";
+	print "<td id=\"show\">Realm</td>";
 	printf("<td>%s</td>", $row["realm"]);
 	print "</tr>";
 	
 	print "<tr>";
-	print "<td>slot</td>";
+	print "<td id=\"show\">Slot</td>";
 	printf("<td>%s</td>", $row["slot"]);
 	print "</tr>";
 	
 	print "<tr>";
-	print "<td>level</td>";
+	print "<td id=\"show\">Level</td>";
 	printf("<td>%d</td>", $row["level"]);
 	print "</tr>";
 	
 	print "<tr>";
-	print "<td>bonus 1</td>";
-	printf("<td>%d %s</td>",
+	print "<td id=\"show\" style=\"vertical-align:top\">Bonuses</td><td>";
+	printf("%d %s<br />\n",
 			$row["amount"],
 			$row["bonusname"]);
-	print "</tr>";
 	
-	$bonus = 2;
 	while($row = $result->fetch_assoc()) {
-		print "<tr>";
-		print "<td>bonus $bonus</td>";
-		printf("<td>%d %s</td>",
+		printf("%d %s<br />\n",
 			$row["amount"],
 			$row["bonusname"]);
-		print "</tr>";
-		$bonus++;
 	}	
+	print "</td></tr>\n";
 	
 	$result->close();
 } else {
