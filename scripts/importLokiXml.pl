@@ -117,22 +117,27 @@ for (my $i = 0; $i < $n; $i++)
 	my $location = getElementValue($node, "Location");
 	print "Location: $location\n";
 
-	# sql statement to insert the item into the database
-	my $sql = "INSERT INTO item (name, realm, slot, level," .
-	   "bonus1_effect, bonus1_amount," .
-	   "bonus2_effect, bonus2_amount," .
-	   "bonus3_effect, bonus3_amount," .
-	   "bonus4_effect, bonus4_amount," .
-	   "bonus5_effect, bonus5_amount," .
-	   "bonus6_effect, bonus6_amount," .
-	   "bonus7_effect, bonus7_amount," .
-	   "bonus8_effect, bonus8_amount," .
-	   "bonus9_effect, bonus9_amount," .
-	   "bonus10_effect, bonus10_amount" .
-	   ") VALUES (\"$name\", \"$realm\", \"$location\"," .
-		"$level";
+	my $dbh = DBI->connect('DBI:mysql:mysql_read_default_file=./my.conf',undef,undef)
+		or die "Failed to connect: " . $DBI::errstr;
+	print "DBI->connect success!\n";
 
-	# get all of the bonus values
+	# sql statement to add this item to the item table
+	my $sql = "INSERT INTO item (name, realm, slot, level) " .
+	   "VALUES (\"$name\", \"$realm\", \"$location\", $level);";
+	# print "SQL statement for this item: $sql\n";
+
+	print "adding item to table\n";
+	$dbh->do($sql);
+
+	# get item_id for the new item
+	$sql = "SELECT item_id FROM item WHERE name = \"$name\";";
+	my $qh = $dbh->prepare($sql);
+	$qh->execute();
+	my @row = $qh->fetchrow();
+	my $itemid = $row[0];
+	print "using item_id $itemid for item \"$name\"\n";
+
+	# process all of the bonus values
 	my $dropItemNodeList = $node->getElementsByTagName("DROPITEM");
 	if($dropItemNodeList->getLength == 1)
 	{
@@ -142,29 +147,52 @@ for (my $i = 0; $i < $n; $i++)
 		for (my $j = 0; $j < $m; $j++)
 		{
 			my $slotNode = $slotNodeList->item($j);
-			my $effect = getElementValue($slotNode, "Effect");
-			my $value = getElementValue($slotNode, "Amount");
+			my $bonus = getElementValue($slotNode, "Effect");
+			my $amount = getElementValue($slotNode, "Amount");
 
-			$sql = $sql . ", \"$effect\", $value";
+			# ignore empty bonuses
+			if(length($bonus) > 0) {
+				# get the bonus id for this bonus
+				$sql = "SELECT bonus_id FROM bonus WHERE name = \"$bonus\";";
 
-			#if($effect != "")
-			{
-				print "Bonus $j: $value $effect\n";
+				$qh = $dbh->prepare($sql);
+				$qh->execute();
+				@row = $qh->fetchrow();
+				my $rowcount = @row;
+				
+				my $bonusid = 0;
+
+				# there should be exactly 1 row
+				if($rowcount == 1) {
+					# this bonus exists, get the id
+					$bonusid = $row[0];
+					print "using bonus_id $bonusid for bonus \"$bonus\"\n";
+				} else {
+					# this bonus does not exist, add it
+					$dbh->do("INSERT INTO bonus (name) VALUES (\"$bonus\");");
+					print "adding new bonus \"$bonus\"\n";
+
+					# re-query for the bonus id
+					$dbh->prepare($sql);
+					$qh->execute();
+					@row = $qh->fetchrow();
+					$bonusid = $row[0];
+					print "using bonus_id $bonusid for bonus \"$bonus\"\n";
+				}
+
+				# update the 3nf table for this item/bonus
+				$sql = "INSERT INTO item_bonuses (item_id, bonus_id, amount) " .
+					"VALUES ($itemid, $bonusid, $amount);";
+				$dbh->do($sql);
+				print "adding item ($itemid) bonus ($bonusid) amount ($amount) " .
+					"to item_bonuses";
+
+				print "Bonus $j: $amount $bonus\n";
+			} else {
+				print "ignoring empty bonus in slot $j\n";
 			}
 		}
 	}
 	
-	$sql = $sql . ");";
-
-	print "SQL statement for this item: $sql\n";
-
-	my $dbh = DBI->connect('DBI:mysql:mysql_read_default_file=./my.conf',undef,undef)
-		or die "Failed to connect: " . $DBI::errstr;
-
-	print "DBI->connect success!\n";
-
-	print "adding item to table\n";
-	$dbh->do($sql);
-
 	print "done!\n";
 }

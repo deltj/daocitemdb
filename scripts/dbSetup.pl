@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 #-------------------------------------------------------------------------------
 #
 # This file is part of daocitemdb.
@@ -36,9 +36,17 @@ if(defined $dbh)
 {
 	print "DBI->connect success!\n";
 
-	# first drop the table if it exists
+	# first drop the tables if they exist
 	print "dropping item table\n";
 	my $sql  = "DROP TABLE IF EXISTS item;";
+	$dbh->do($sql);
+
+	print "dropping bonus table\n";
+	$sql  = "DROP TABLE IF EXISTS bonus;";
+	$dbh->do($sql);
+
+	print "dropping item_bonuses table\n";
+	$sql  = "DROP TABLE IF EXISTS item_bonuses;";
 	$dbh->do($sql);
 
 	# create the item table
@@ -49,27 +57,44 @@ if(defined $dbh)
 		"name VARCHAR(100)," .
 		"realm VARCHAR(10)," .
 		"slot VARCHAR(10)," .
-		"level TINYINT UNSIGNED," .
-		"bonus1_effect VARCHAR(25)," .
-		"bonus1_amount TINYINT,".
-		"bonus2_effect VARCHAR(25)," .
-		"bonus2_amount TINYINT,".
-		"bonus3_effect VARCHAR(25)," .
-		"bonus3_amount TINYINT,".
-		"bonus4_effect VARCHAR(25)," .
-		"bonus4_amount TINYINT,".
-		"bonus5_effect VARCHAR(25)," .
-		"bonus5_amount TINYINT,".
-		"bonus6_effect VARCHAR(25)," .
-		"bonus6_amount TINYINT,".
-		"bonus7_effect VARCHAR(25)," .
-		"bonus7_amount TINYINT,".
-		"bonus8_effect VARCHAR(25)," .
-		"bonus8_amount TINYINT,".
-		"bonus9_effect VARCHAR(25)," .
-		"bonus9_amount TINYINT," .
-		"bonus10_effect VARCHAR(25)," .
-		"bonus10_amount TINYINT" .
+		"level TINYINT UNSIGNED" .
+#		"bonus1_effect VARCHAR(25)," .
+#		"bonus1_amount TINYINT,".
+#		"bonus2_effect VARCHAR(25)," .
+#		"bonus2_amount TINYINT,".
+#		"bonus3_effect VARCHAR(25)," .
+#		"bonus3_amount TINYINT,".
+#		"bonus4_effect VARCHAR(25)," .
+#		"bonus4_amount TINYINT,".
+#		"bonus5_effect VARCHAR(25)," .
+#		"bonus5_amount TINYINT,".
+#		"bonus6_effect VARCHAR(25)," .
+#		"bonus6_amount TINYINT,".
+#		"bonus7_effect VARCHAR(25)," .
+#		"bonus7_amount TINYINT,".
+#		"bonus8_effect VARCHAR(25)," .
+#		"bonus8_amount TINYINT,".
+#		"bonus9_effect VARCHAR(25)," .
+#		"bonus9_amount TINYINT," .
+#		"bonus10_effect VARCHAR(25)," .
+#		"bonus10_amount TINYINT" .
+		");";
+	$dbh->do($sql);
+
+	# create the bonus table
+	print "creating bonus table\n";
+	$sql = "CREATE TABLE bonus (" .
+		"bonus_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," .
+		"name VARCHAR(100)" .
+		");";
+	$dbh->do($sql);
+
+	# create the item_bonuses table
+	print "creating item_bonuses table\n";
+	$sql = "CREATE TABLE item_bonuses (" .
+		"item_id INT NOT NULL," .
+		"bonus_id INT NOT NULL," .
+		"amount TINYINT UNSIGNED" .
 		");";
 	$dbh->do($sql);
 
