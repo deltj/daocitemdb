@@ -5,9 +5,8 @@ $unserializedData = array();
 parse_str($serializedData,$unserializedData);
 
 $name = $unserializedData["itemname"];
-//print_r($name);
-
 $bonus1id = $unserializedData["bonus1"];
+$slot = $unserializedData["slot"];
 
 require('creds.php');
 
@@ -32,18 +31,55 @@ $sql = "SELECT item.*, bonus.name as bonusname, item_bonuses.amount as amount " 
 */
 
 if(strlen($name) > 0) {
+	// item name is valid
 	if($bonus1id > 0) {
-		// search by name and bonus1id
+		// item name and bonus id are valid
+		if(strlen($slot) > 0) {
+			// item name, bonus, and slot are valid
+		} else {
+			// item name and bonus are valid
+		}
 	} else {
-		// search by name only
-		$sql = "SELECT item_id,name FROM item WHERE name LIKE '%$name%';";
+		// item name is valid
+		if(strlen($slot) > 0) {
+			// item name and slot are valid
+		} else {
+			// item name is valid
+			$sql = "SELECT item_id, name " .
+				"FROM item " .
+				"WHERE name LIKE '%$name%';";
+		}
 	}
 } else {
-	// search bu bonus1id only
-	$sql = "SELECT item.item_id, item.name FROM item_bonuses " .
-		"INNER JOIN item ON item_bonuses.item_id = item.item_id " .
-		"WHERE item_bonuses.bonus_id = $bonus1id";
+	// item name is not valid
+	if($bonus1id > 0) {
+		// bonus id is valid
+		if(strlen($slot) > 0) {
+			// bonus id and slot are valid
+			$sql = "SELECT item.item_id, item.name " .
+				"FROM item_bonuses ".
+				"INNER JOIN item ON item_bonuses.item_id = item.item_id " .
+				"WHERE item_bonuses.bonus_id = $bonus1id AND item.slot = '$slot';";
+		} else {
+			// bonus id is valid
+			$sql = "SELECT item.item_id, item.name " .
+				"FROM item_bonuses " .
+				"INNER JOIN item ON item_bonuses.item_id = item.item_id " .
+				"WHERE item_bonuses.bonus_id = $bonus1id;";
+		}
+	} else {
+		// item name and bonus are not valid
+		if(strlen($slot) > 0) {
+			// slot is valid
+			$sql = "SELECT item_id, name " .
+				"FROM item " .
+				"WHERE slot = '$slot';";
+		} else {
+			// nothing is valid
+		}
+	}
 }
+
 
 if(strlen($sql) > 0) {
 	if($result = $mysqli->query($sql)) {

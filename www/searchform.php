@@ -31,25 +31,27 @@ function doSearch() {
 	var bonus1id = document.getElementById("bonus1").selectedIndex;
 	//console.log(bonus1id);
 
+	var slot = document.getElementById("slot").value;
+
 	// if the form is empty, clear the result table
-	if(bonus1id == 0 && itemname.length == 0) {
+	if(slot.length == 0 && bonus1id == 0 && itemname.length == 0) {
 		console.log("clearing result table");
 
 		// get a handle to the result table
 		var table = document.getElementById("resulttable");
 
 		// form is empty, clear the table
-		for(var j=0; j<table.rows.length; j++) {
+		for(var j=table.rows.length-1; j>=0; j--) {
 			table.deleteRow(j);
 		}
 	}
-
-	// if the form is populated, do the search!
+	
+	// form has data, do the search!
 	else {
 		// serialize the search parameters so they can be sent to the 
 		// back end search processor
 		var searchparams = $("form").serialize();
-		//console.log(searchparams);
+		console.log(searchparams);
 
 		// post the search parameters to search.php.  if matching items
 	   	// are found, the result will be an array of JSON objects.
@@ -64,7 +66,7 @@ function doSearch() {
 // @param status		the status of the HTTP Post
 function searchCallback(data, status) {
 	//console.log("in searchCallback");
-	console.log(data);
+	//console.log(data);
 
 	// parse the JSON result so it can be displayed
 	var result = $.parseJSON(data);
@@ -74,14 +76,14 @@ function searchCallback(data, status) {
 	// get a handle to the result table
 	var table = document.getElementById("resulttable");
 
+	// first delete all rows from the table
+	for(var j=table.rows.length-1; j>=0; j--) {
+		table.deleteRow(j);
+	}
+
 	// loop through the array of objects
 	for(var i=0; i<result.length; i++) {
 		//console.log(result[i].name);
-
-		// first delete all rows from the table
-		for(var j=0; j<table.rows.length; j++) {
-			table.deleteRow(j);
-		}
 
 		// append a row to the table (-1 means insert the new row at the end)
 		var row = table.insertRow(-1);
@@ -102,14 +104,30 @@ $(document).ready(function() {
 	document.getElementById("itemname").onkeyup = function() {doSearch()};
 
 	document.getElementById("bonus1").onchange = function() {doSearch()};
+	document.getElementById("slot").onchange = function() {doSearch()};
 });
 </script>
 
 </head>
 <body>
 <form>
+
+Slot: <select name="slot" id="slot">
+<option value="">-</option>
+<?php
+$sql = "SELECT DISTINCT(slot) as slot FROM item;";
+
+if($result = $mysqli->query($sql)) {
+	while($r = $result->fetch_assoc()) {
+		$slot = $r["slot"];
+		print "<option value=\"$slot\">" . $r["slot"] . "</option>\n";
+	}
+}
+?>
+</select><br />
+
 Bonus: <select name="bonus1" id="bonus1">
-<option value="0">-</option><!-- default, don't actually search for this -->
+<option value="0">-</option>
 <?php
 $sql = "SELECT * FROM bonus;";
 
@@ -119,9 +137,9 @@ if($result = $mysqli->query($sql)) {
 		print "<option value=\"$bonusid\">" . $r["name"] . "</option>\n";
 	}
 }
-$mysqli->close();
 ?>
 </select><br />
+
 Name: <input type="text" name="itemname" id="itemname"><br />
 </form>
 
@@ -131,3 +149,6 @@ Name: <input type="text" name="itemname" id="itemname"><br />
 
 </body>
 </html>
+<?php
+$mysqli->close();
+?>
