@@ -146,6 +146,13 @@ sub importLokiXmlFile {
 				my $bonus = getElementValue($slotNode, "Effect");
 				my $amount = getElementValue($slotNode, "Amount");
 
+				# what kind of bonus is this?
+				my $bonustype = getElementValue($slotNode, "Type");
+				
+				if($bonustype eq "Cap Increase") {
+					$bonus .= " Cap";
+				}
+
 				# ignore empty bonuses
 				if(length($bonus) > 0) {
 					# get the bonus id for this bonus
