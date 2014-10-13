@@ -135,7 +135,7 @@ $(document).ready(function() {
 <tr><td>Slot:</td><td><select name="slot" id="slot">
 <option value="">-</option>
 <?php
-$sql = "SELECT DISTINCT(slot) as slot FROM item;";
+$sql = "SELECT DISTINCT(slot) as slot FROM item ORDER BY slot ASC;";
 
 if($result = $mysqli->query($sql)) {
 	while($r = $result->fetch_assoc()) {
@@ -149,7 +149,7 @@ if($result = $mysqli->query($sql)) {
 <tr><td>Bonus:</td><td><select name="bonus1" id="bonus1">
 <option value="0">-</option>
 <?php
-$sql = "SELECT * FROM bonus;";
+$sql = "SELECT * FROM bonus ORDER BY name ASC;";
 
 if($result = $mysqli->query($sql)) {
 	while($r = $result->fetch_assoc()) {
@@ -164,6 +164,7 @@ if($result = $mysqli->query($sql)) {
 </table>
 </form>
 <button type="button" id="clear">Clear</button>
+<br /><br />
 
 <!-- this table will store the query result -->
 <table id="results">

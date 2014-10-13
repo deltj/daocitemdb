@@ -49,5 +49,7 @@ if($mysqli->multi_query($sql)) {
 $mysqli->close();
 ?>
 </table>
+<br /><br />
+Daocitemdb is <a href="https://github.com/deltj/daocitemdb">Open Source Software</a>!
 </body>
 </html>
