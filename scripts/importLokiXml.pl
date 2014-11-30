@@ -28,6 +28,7 @@ use strict;
 use warnings;
 use XML::DOM;
 use DBI;
+use Item;
 
 my $parser = new XML::DOM::Parser;
 
@@ -199,6 +200,73 @@ sub importLokiXmlFile {
 	}
 }
 
+sub newImportLokiXmlFile {
+
+	my $doc = $parser->parsefile($_[0]);
+
+	# get a NodeList of descendent elements with the name "SCItem"
+	# (this should be the root node in a Loki item XML document)
+	my $nodes = $doc->getElementsByTagName("SCItem");
+	my $n = $nodes->getLength;
+
+	my $item = new Item;
+
+	for (my $i = 0; $i < $n; $i++)
+	{
+		# get the item at position i out of the NodeList
+		my $node = $nodes->item($i);
+
+		my $name = getElementValue($node, "ItemName");
+		print "ItemName: $name\n";
+		$item->setName($name);
+
+		my $realm = getElementValue($node, "Realm");
+		print "Realm: $realm\n";
+		$item->setRealm($realm);
+
+		my $level = getElementValue($node, "Level");
+		print "Level: $level\n";
+		$item->setLevel($level);
+
+		my $location = getElementValue($node, "Location");
+		print "Location: $location\n";
+		$item->setSlot($location);
+
+		# process all of the bonus values
+		my $dropItemNodeList = $node->getElementsByTagName("DROPITEM");
+		if($dropItemNodeList->getLength == 1)
+		{
+			my $slotNodeList = $dropItemNodeList->item(0)->getElementsByTagName("SLOT");
+			my $m = $slotNodeList->getLength;
+		
+			for (my $j = 0; $j < $m; $j++)
+			{
+				my $slotNode = $slotNodeList->item($j);
+				my $bonus = getElementValue($slotNode, "Effect");
+				my $amount = getElementValue($slotNode, "Amount");
+
+				# what kind of bonus is this?
+				my $bonustype = getElementValue($slotNode, "Type");
+				
+				if($bonustype eq "Cap Increase") {
+					$bonus .= " Cap";
+				}
+
+				# ignore empty bonuses
+				if(length($bonus) > 0) {
+					$item->addBonus($bonus, $amount);
+
+					print "Bonus $j: $amount $bonus\n";
+				} else {
+					print "ignoring empty bonus in slot $j\n";
+				}
+			}
+		}
+	}
+
+	$item->print();
+}
+
 my $numargs = $#ARGV + 1;
 if($numargs < 1) {
 	print "specify at least one XML file\n";
@@ -208,7 +276,7 @@ if($numargs < 1) {
 print "$numargs files to import...\n";
 
 foreach my $file (@ARGV) {
-	importLokiXmlFile($file);
+	newImportLokiXmlFile($file);
 }
 
 print "done!\n";
