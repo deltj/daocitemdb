@@ -57,27 +57,9 @@ if(defined $dbh)
 		"name VARCHAR(100)," .
 		"realm VARCHAR(10)," .
 		"slot VARCHAR(10)," .
-		"level TINYINT UNSIGNED" .
-#		"bonus1_effect VARCHAR(25)," .
-#		"bonus1_amount TINYINT,".
-#		"bonus2_effect VARCHAR(25)," .
-#		"bonus2_amount TINYINT,".
-#		"bonus3_effect VARCHAR(25)," .
-#		"bonus3_amount TINYINT,".
-#		"bonus4_effect VARCHAR(25)," .
-#		"bonus4_amount TINYINT,".
-#		"bonus5_effect VARCHAR(25)," .
-#		"bonus5_amount TINYINT,".
-#		"bonus6_effect VARCHAR(25)," .
-#		"bonus6_amount TINYINT,".
-#		"bonus7_effect VARCHAR(25)," .
-#		"bonus7_amount TINYINT,".
-#		"bonus8_effect VARCHAR(25)," .
-#		"bonus8_amount TINYINT,".
-#		"bonus9_effect VARCHAR(25)," .
-#		"bonus9_amount TINYINT," .
-#		"bonus10_effect VARCHAR(25)," .
-#		"bonus10_amount TINYINT" .
+		"level TINYINT UNSIGNED," .
+		"hash VARCHAR(33)," .
+		"confidence SMALLINT UNSIGNED DEFAULT 0" .
 		");";
 	$dbh->do($sql);
 
@@ -96,6 +78,21 @@ if(defined $dbh)
 		"bonus_id INT NOT NULL," .
 		"amount TINYINT UNSIGNED" .
 		");";
+	$dbh->do($sql);
+
+    print "dropping IncrementConfidence stored procedure\n";
+	$sql = "DROP PROCEDURE IF EXISTS IncrementConfidence;";
+	$dbh->do($sql);
+
+	print "creating the IncrementConfidence stored procedure\n";
+	$sql = 
+		"CREATE PROCEDURE IncrementConfidence(IN id INT) " .
+		"BEGIN " .
+		"DECLARE c SMALLINT UNSIGNED; " .
+		"SELECT confidence INTO c FROM item WHERE item_id=id; " .
+		"SET c = c + 1; " .
+		"UPDATE item SET confidence=c WHERE item_id=id; " .
+		"END";
 	$dbh->do($sql);
 
 	print "done!\n";

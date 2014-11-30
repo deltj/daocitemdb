@@ -106,6 +106,11 @@ sub addBonus {
 	return;
 }
 
+sub getBonusArrayRef {
+	my ($self) = @_;
+	return $self->{_bonuses};
+}
+
 sub getHash {
 	my ($self) = @_;
 

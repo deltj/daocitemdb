@@ -32,6 +32,8 @@ use Item;
 
 my $parser = new XML::DOM::Parser;
 
+my $dbh = undef;
+
 #-------------------------------------------------------------------------------
 # getElementValue
 #
@@ -264,9 +266,135 @@ sub newImportLokiXmlFile {
 		}
 	}
 
-	$item->print();
+	addOrVerifyItem($item);
 }
 
+#-------------------------------------------------------------------------------
+# getBonusId
+#
+# This subroutine checks whether the specified Bonus exists in the database.
+# If the specified Bonus does not exist in the database it is added.  The 
+# bonus_id for the specified Bonus is returned.
+#
+# The first parameter to this subroutine is the name of a Bonus (the string that
+# describes it, e.g. Strength)
+#
+# This subroutine returns a bonus_id
+#-------------------------------------------------------------------------------
+sub getBonusId {
+
+	my $bonus= $_[0];
+
+	# get the bonus id for this bonus
+	my $sql = "SELECT bonus_id FROM bonus WHERE name = \"$bonus\";";
+
+	my $qh = $dbh->prepare($sql);
+	$qh->execute();
+	my @row = $qh->fetchrow();
+				
+	my $bonusid = 0;
+
+	if(@row) {
+		# this bonus exists, get the id
+		$bonusid = $row[0];
+	} else {
+		# this bonus does not exist, add it
+		$dbh->do("INSERT INTO bonus (name) VALUES (\"$bonus\");");
+		print "adding new bonus \"$bonus\"\n";
+
+		# re-query for the bonus id
+		$dbh->prepare($sql);
+		$qh->execute();
+		@row = $qh->fetchrow();
+		$bonusid = $row[0];
+	}
+
+	return $bonusid;
+}
+
+#-------------------------------------------------------------------------------
+# addOrVerifyItem
+#
+# This subroutine considers the specified Item object, adding it to the
+# database if it doesn't exist yet, or adds to the Item's verification count
+# if it does exist.
+#
+# The first parameter to this subroutine is an Item object.
+#-------------------------------------------------------------------------------
+sub addOrVerifyItem {
+
+	my $item = $_[0];
+
+	print "considering the following item:\n";
+	$item->print();
+
+	# get item_id for the new item
+	my $sql = "SELECT item_id FROM item WHERE hash = \"" . $item->getHash() . "\";";
+	my $qh = $dbh->prepare($sql);
+	my $rv = $qh->execute();
+	#TODO: check return value of execute
+
+	my @row = $qh->fetchrow();
+	if(@row) {
+		my $itemid = $row[0];
+		printf "found a matching item with item_id: %d\n", $itemid;
+
+		$sql = "CALL IncrementConfidence($itemid);";
+		$dbh->do($sql);
+
+	} else {
+		print "no matching item found, adding a new one\n";
+
+		# sql statement to add this item to the item table
+		$sql = "INSERT INTO item (name, realm, slot, level, hash) " .
+			"VALUES (" .
+			"\"" . $item->getName() . "\"," .
+		    "\"" . $item->getRealm() . "\"," .
+			"\"" . $item->getSlot() . "\"," .
+			$item->getLevel() . "," .
+			"\"" . $item->getHash() . "\");";
+		# print "SQL statement for this item: $sql\n";
+
+		print "adding item to table\n";
+		$dbh->do($sql);
+
+		# get item_id for the new item
+		$sql = "SELECT item_id FROM item WHERE hash = \"" . $item->getHash() . "\";";
+		my $qh = $dbh->prepare($sql);
+		$qh->execute();
+		my @row = $qh->fetchrow();
+		my $itemid = $row[0];
+		print "using item_id $itemid for item \"" . $item->getName() . "\"\n";
+
+		# add each bonus to the item
+		foreach (@{ $item->getBonusArrayRef() }) {
+			my $bonusName = $_->getName();
+			my $bonusValue = $_->getValue();
+
+			my $bonusid = getBonusId($bonusName);
+			print "using bonus_id $bonusid for $bonusName\n";
+
+			# update the 3nf table for this Item's bonuses
+			$sql = "INSERT INTO item_bonuses (item_id, bonus_id, amount) " .
+				"VALUES ($itemid, $bonusid, $bonusValue);";
+			$dbh->do($sql);
+		}
+	}
+
+	# sql statement to add this item to the item table
+#	my $sql = "INSERT INTO item (name, realm, slot, level) " .
+#	   "VALUES (\"$name\", \"$realm\", \"$location\", $level);";
+	# print "SQL statement for this item: $sql\n";
+
+#	print "adding item to table\n";
+#	$dbh->do($sql);
+}
+
+#==============================================================================
+#
+# PROGRAM ENTRY POINT 
+#
+#==============================================================================
 my $numargs = $#ARGV + 1;
 if($numargs < 1) {
 	print "specify at least one XML file\n";
@@ -275,6 +403,11 @@ if($numargs < 1) {
 
 print "$numargs files to import...\n";
 
+# connect to the database
+$dbh = DBI->connect('DBI:mysql:mysql_read_default_file=./my.conf',undef,undef)
+	or die "Failed to connect: " . $DBI::errstr;
+
+# process all of the files specified on the command line
 foreach my $file (@ARGV) {
 	newImportLokiXmlFile($file);
 }

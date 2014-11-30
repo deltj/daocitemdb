@@ -51,6 +51,16 @@ if($result = $mysqli->query($sql)) {
 	print "</tr>";
 	
 	print "<tr>";
+	print "<td id=\"show\">Hash</td>";
+	printf("<td>%s</td>", $row["hash"]);
+	print "</tr>";
+	
+	print "<tr>";
+	print "<td id=\"show\">Confidence</td>";
+	printf("<td>%d</td>", $row["confidence"]);
+	print "</tr>";
+	
+	print "<tr>";
 	print "<td id=\"show\" style=\"vertical-align:top\">Bonuses</td><td>";
 	printf("%d %s<br />\n",
 			$row["amount"],
