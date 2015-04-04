@@ -27,7 +27,7 @@ use strict;
 use warnings;
 use DBI;
 
-my $dbh = DBI->connect('DBI:mysql:mysql_read_default_file=./my.conf',undef,undef)
+my $dbh = DBI->connect('DBI:mysql:mysql_read_default_file=/etc/itemdb.conf',undef,undef)
 	or die "Failed to connect: " . $DBI::errstr;
 
 # if DBI->connect fails, it will return undef

@@ -17,3 +17,5 @@ printf("Slot: %s\n", $item->getSlot);
 
 $item->setLevel(50);
 printf("Level: %d\n", $item->getLevel);
+
+printf "Loki XML: \n %s\n\n", $item->getLokiXml();

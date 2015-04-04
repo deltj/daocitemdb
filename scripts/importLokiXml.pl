@@ -115,7 +115,7 @@ sub importLokiXmlFile {
 		my $location = getElementValue($node, "Location");
 		print "Location: $location\n";
 
-		my $dbh = DBI->connect('DBI:mysql:mysql_read_default_file=./my.conf',
+		my $dbh = DBI->connect('DBI:mysql:mysql_read_default_file=/etc/itemdb.conf',
 				undef,undef)
 			or die "Failed to connect: " . $DBI::errstr;
 		#print "DBI->connect success!\n";
@@ -404,7 +404,7 @@ if($numargs < 1) {
 print "$numargs files to import...\n";
 
 # connect to the database
-$dbh = DBI->connect('DBI:mysql:mysql_read_default_file=./my.conf',undef,undef)
+$dbh = DBI->connect('DBI:mysql:mysql_read_default_file=/etc/itemdb.conf',undef,undef)
 	or die "Failed to connect: " . $DBI::errstr;
 
 # process all of the files specified on the command line
