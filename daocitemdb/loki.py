@@ -222,6 +222,13 @@ def read_item_from_xml(xml_string):
             
     return item
 
+#
+# This function returns a string containing XML compatible suitable to be 
+# imported into Loki
+#
 def write_item_to_xml(item):
     
+    scitem = ET.Element('SCItem')
+    
+    print(ET.tostring(scitem))
     return ""

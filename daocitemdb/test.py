@@ -18,7 +18,7 @@
 #
 #-------------------------------------------------------------------------------
 #
-# unit test for the Item class
+# unit tests for daocitemdb
 #
 #-------------------------------------------------------------------------------
 import unittest
@@ -26,16 +26,29 @@ from daocitemdb import items
 from daocitemdb import loki
 
 class TestItem(unittest.TestCase):
-
+    
     def setUp(self):
-        item = loki.read_item_from_xml(loki.test_xml_string)
-        print(item)
         pass
 
     def tearDown(self):
         pass
-
-    def testName(self):
+    
+    def test_reading_xml(self):
+        print("Testing Loki XML Read")
+        
+        # read in the sample item XML
+        item = loki.read_item_from_xml(loki.test_xml_string)
+        print(item)
+        pass
+    
+    def test_writing_xml(self):
+        print("Testing Loki XML Write")
+        
+        # build a sample Item to write out
+        item = items.Item()
+        item.name = "Foo Item"
+        
+        loki.write_item_to_xml(item)
         pass
 
 if __name__ == "__main__":
