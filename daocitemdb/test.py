@@ -47,6 +47,8 @@ class TestItem(unittest.TestCase):
         # build a sample Item to write out
         item = items.Item()
         item.name = "Foo Item"
+        item.location = "Face"
+        item.realm = "All"
         
         loki.write_item_to_xml(item)
         pass

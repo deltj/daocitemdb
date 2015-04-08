@@ -22,6 +22,7 @@
 # files used with the Loki spellcrafting software from Synthetic Realms.
 #
 #-------------------------------------------------------------------------------
+from _elementtree import SubElement
 try:
     # first try to use the faster c-implementation of ElementTree
     import xml.etree.cElementTree as ET
@@ -229,6 +230,68 @@ def read_item_from_xml(xml_string):
 def write_item_to_xml(item):
     
     scitem = ET.Element('SCItem')
+    
+    activity_state = SubElement(scitem, "ActivityState")
+    activity_state.text = "drop"
+    
+    location = SubElement(scitem, "Location")
+    location.text = item.location
+    
+    realm = SubElement(scitem, "Realm")
+    realm.text = item.realm
+    
+    item_name = SubElement(scitem, "ItemName")
+    item_name.text = item.name
+    
+    afdps = SubElement(scitem, "AFDPS")
+    afdps.text = "16.5"
+    
+    bonus = SubElement(scitem, "Bonus")
+    bonus.text = "0"
+    
+    item_quality = SubElement(scitem, "ItemQuality")
+    item_quality.text = "100"
+    
+    equipped = SubElement(scitem, "Equipped")
+    equipped.text = "1"
+    
+    level = SubElement(scitem, "Level")
+    level.text = "50"
+    
+    offhand = SubElement(scitem, "OFFHAND")
+    offhand.text = "no"
+    
+    source = SubElement(scitem, "SOURCE")
+    source.text = "drop"
+    
+    type = SubElement(scitem, "TYPE")
+    type.text = "Unspecified"
+    
+    damage_type = SubElement(scitem, "DAMAGETYPE")
+    damage_type.text = "Thrust"
+    
+    speed = SubElement(scitem, "Speed")
+    speed.text = "4.0"
+    
+    class_restrictions = SubElement(scitem, "CLASSRESTRICTIONS")
+    class_ = SubElement(class_restrictions, "CLASS")
+    class_.text = "All"
+    
+    is_unique = SubElement(scitem, "ISUNIQUE")
+    is_unique.text = "0"
+    
+    oracle_ignore = SubElement(scitem, "ORACLE_IGNORE")
+    oracle_ignore.text = "0"
+    
+    user_value = SubElement(scitem, "USER_VALUE")
+    user_value.text = "0"
+    
+    variant = SubElement(scitem, "VARIANT")
+
+    associate = SubElement(scitem, "ASSOCIATE", {"IsParent":"0"})
+    
+    equiplist = SubElement(scitem, "EQUIPLIST")
+    #slot = SubElement(equiplist, )
     
     print(ET.tostring(scitem))
     return ""
