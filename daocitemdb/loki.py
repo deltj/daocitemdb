@@ -29,7 +29,7 @@ try:
 except ImportError:
     # if that's not available, fall back to the python implementation
     import xml.etree.ElementTree as ET
-    
+from xml.dom import minidom    
 from daocitemdb import items
 
 # Here is an example Loki XML file for a real Item
@@ -157,6 +157,10 @@ test_xml_string = """\
 </SCItem>
 """
 
+def prettify(elem):
+    rough_string = ET.tostring(elem, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    return reparsed.toprettyxml(indent="  ")
 #
 # This function returns an Item object populated with values from a Loki XML 
 # file, which is passed to this function as a string.
@@ -293,5 +297,32 @@ def write_item_to_xml(item):
     equiplist = SubElement(scitem, "EQUIPLIST")
     #slot = SubElement(equiplist, )
     
-    print(ET.tostring(scitem))
+    dropitem = SubElement(scitem, "DROPITEM")
+    
+    for slot_num in range(10):
+        slot = SubElement(dropitem, "SLOT", {"Number":str(slot_num)})
+    
+        remakes = SubElement(slot, "Remakes")
+        remakes.text = "0"
+        
+        effect = SubElement(slot, "Effect")
+        effect.text = "some effect"
+        
+        quality = SubElement(slot, "Qua")
+        quality.text = "99"
+        
+        amount = SubElement(slot, "Amount")
+        amount.text = "3"
+        
+        done = SubElement(slot, "Done")
+        done.text = "0"
+        
+        time = SubElement(slot, "Time")
+        time.text = "0"
+        
+        type = SubElement(slot, "Type")
+        type.text = "Skill" 
+        
+    #print(ET.tostring(scitem))
+    print(prettify(scitem))
     return ""
