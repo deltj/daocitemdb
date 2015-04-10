@@ -235,7 +235,7 @@ def write_item_to_xml(item):
     
     scitem = ET.Element('SCItem')
     
-    activity_state = SubElement(scitem, "ActivityState")
+    activity_state = SubElement(scitem, "ActiveState")
     activity_state.text = "drop"
     
     location = SubElement(scitem, "Location")
@@ -277,6 +277,9 @@ def write_item_to_xml(item):
     speed = SubElement(scitem, "Speed")
     speed.text = "4.0"
     
+    dbsource = SubElement(scitem, "DBSOURCE")
+    dbsource.text = "LOKI"
+    
     class_restrictions = SubElement(scitem, "CLASSRESTRICTIONS")
     class_ = SubElement(class_restrictions, "CLASS")
     class_.text = "All"
@@ -295,10 +298,11 @@ def write_item_to_xml(item):
     associate = SubElement(scitem, "ASSOCIATE", {"IsParent":"0"})
     
     equiplist = SubElement(scitem, "EQUIPLIST")
-    #slot = SubElement(equiplist, )
+    equip_slot = SubElement(equiplist, "SLOT", {"NAME":"Right Hand"})
+    equip_slot.text = "true"
     
     dropitem = SubElement(scitem, "DROPITEM")
-    
+        
     for slot_num in range(10):
         slot = SubElement(dropitem, "SLOT", {"Number":str(slot_num)})
     
@@ -306,7 +310,7 @@ def write_item_to_xml(item):
         remakes.text = "0"
         
         effect = SubElement(slot, "Effect")
-        effect.text = "some effect"
+        effect.text = "Dexterity"
         
         quality = SubElement(slot, "Qua")
         quality.text = "99"
@@ -321,8 +325,7 @@ def write_item_to_xml(item):
         time.text = "0"
         
         type = SubElement(slot, "Type")
-        type.text = "Skill" 
-        
-    #print(ET.tostring(scitem))
-    print(prettify(scitem))
-    return ""
+        type.text = "Stat" 
+    
+    # return a nicely formatted XML string
+    return prettify(scitem)

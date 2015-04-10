@@ -22,7 +22,16 @@
 # attributes. 
 #
 #-------------------------------------------------------------------------------
-        
+from enum import Enum
+
+#
+# Enum for specifying bonus types
+#
+class BonusType(Enum):
+    Stat = 1
+    CapIncrease = 2
+    Skill = 3
+
 #
 # This class represents a DAoC Item
 #
@@ -162,14 +171,32 @@ class Bonus(object):
         self.__amount = value
      
     #
+    # get the bonus type
+    #
+    def get_bonus_type(self):
+        return self.__bonus_type
+    
+    #
+    # set the bonus type
+    #
+    def set_bonus_type(self, value):
+        self.__bonus_type = value
+
+    #
     # The effect is basically the name or identifier for this bonus.  For 
-    # example, if the bonus is "Strength Cap 5", then "Strength Cap" is the
+    # example, if the bonus is "Strength 5", then "Strength" is the
     # effect.
     effect = property(get_effect, set_effect, None, None)
     
     #
-    # The amount of the bonus.  For example, if the bonus is "Strength Cap 5",
+    # The amount of the bonus.  For example, if the bonus is "Strength 5",
     # then "5" is the amount.
     #
     amount = property(get_amount, set_amount, None, None)
+    
+    #
+    # Bonus type indicates whether this bonus is a stat, stat cap, skill, etc.
+    # (This is mainly for compatibility with Loki)
+    #
+    bonus_type = property(get_bonus_type, set_bonus_type, None, None)
     

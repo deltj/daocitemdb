@@ -44,13 +44,27 @@ class TestItem(unittest.TestCase):
     def test_writing_xml(self):
         print("Testing Loki XML Write")
         
-        # build a sample Item to write out
+        # build a fake Item to write out
         item = items.Item()
-        item.name = "Foo Item"
-        item.location = "Face"
+        item.name = "Some Weapon"
+        item.location = "Right Hand"
         item.realm = "All"
         
-        loki.write_item_to_xml(item)
+        # add some bonuses to the fake item
+        bonus0 = items.Bonus()
+        bonus0.type = items.BonusType.Stat
+        bonus0.effect = "Strength"
+        bonus0.amount = "25"
+        item.add_bonus(bonus0)
+        
+        # generate a Loki XML representation of this item
+        loki_xml_string = loki.write_item_to_xml(item)
+        
+        # write it out to a file (for testing with Loki)
+        loki_xml_file = open("TestItem.xml", "w")
+        loki_xml_file.write(loki_xml_string)
+        loki_xml_file.close()
+        
         pass
 
 if __name__ == "__main__":
