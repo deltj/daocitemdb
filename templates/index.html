@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+
+<body>
+
+
+{% if item_list %}
+	There are {{ item_list|length }} Items in the database.
+    <table border="1">
+    <tr><td>id</td><td>name</td></tr>
+    {% for item in item_list %}
+        <tr><td>{{ item.id }}</td><td>{{ item.name }}</td></tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No items.</p>
+{% endif %}
+
+<body>
+
+<html>
