@@ -1,3 +1,5 @@
 # binary, etc
 __pycache__/
 *.py[cod]
+/db.sqlite3
+/log

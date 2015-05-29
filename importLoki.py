@@ -23,7 +23,12 @@
 #
 #-------------------------------------------------------------------------------'
 import argparse
+import os
 import os.path
+
+# initialize django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "daocitemdb.settings")
+    
 from daocitemdb import loki
 
 # main function of the script
@@ -50,4 +55,7 @@ if __name__ == "__main__":
                 
                 # try to read the XML
                 loki.read_item_from_xml(xml_string)
+        else:
+            print("file doesn't exist (" + filename + ")")
+    
         
