@@ -22,6 +22,7 @@
 #
 #-------------------------------------------------------------------------------
 from django.db import models
+import hashlib
 
 # This model represents a Slot.  A Slot is a place on a character where an item
 # can be equipped.  For example, an item that is a necklace may be equipped in
@@ -44,7 +45,22 @@ class Bonus(models.Model):
     # This override provides a short, human-readable description
     def __str__(self):
         return self.name
+
+# This model represents a specific bonus that a specific item has.
+class ItemBonus(models.Model):
     
+    # The Item having the Bonus
+    item = models.ForeignKey("daocitemdb.Item")
+    
+    # The Bonus the Item has 
+    bonus = models.ForeignKey("daocitemdb.Bonus")
+    
+    # The amount of the bonus
+    amount = models.SmallIntegerField(default=0)
+    
+    def bonus_name(self):
+        return self.bonus.name
+
 # This model represents an Item.  An Item is an object in DAoC that may be 
 # equipped by a character.
 class Item(models.Model):
@@ -80,18 +96,24 @@ class Item(models.Model):
     # This override provides a short, human-readable description
     def __str__(self):
         return self.name
-
-# This model represents a specific bonus that a specific item has.
-class ItemBonus(models.Model):
     
-    # The Item having the Bonus
-    item = models.ForeignKey(Item)
+    # Generate a CSV representation of the bonuses for this item.
+    def get_bonus_csv(self):
+        
+        # get the bonus list for this item
+        bonus_list = ItemBonus.objects.filter(item_id=self.id).order_by("bonus__name")
+        
+        # generate the csv
+        csv_string = ""
+        for bonus in bonus_list:
+            csv_string += bonus.bonus_name() + "," + str(bonus.amount) + ","
+            
+        return csv_string
     
-    # The Bonus the Item has 
-    bonus = models.ForeignKey(Bonus)
-    
-    # The amount of the bonus
-    amount = models.SmallIntegerField(default=0)
-    
-    def bonus_name(self):
-        return self.bonus.name
+    # This function determines the hash value for this item by first creating 
+    # a comma-separated-variable description of all of the item's bonuses, then
+    # computing the MD5 sum for the CSV string.
+    def get_bonus_hash(self):
+        
+        csv_string = self.get_bonus_csv()
+        return hashlib.md5(csv_string.encode("utf-8")).hexdigest()

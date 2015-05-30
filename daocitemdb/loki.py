@@ -87,7 +87,7 @@ def get_bonus(bonus_name):
 # This function processes a Loki XML file, which is passed to this function as
 # a string, and adds the item described in the XML to the database.
 #
-def read_item_from_xml(xml_string):
+def import_item_from_xml(xml_string):
     
     #log.info(xml_string)
     
@@ -156,6 +156,10 @@ def read_item_from_xml(xml_string):
                                    bonus=this_bonus,
                                    amount=bonus_amount)
             item_bonus.save()
+            
+    # get this item's hash
+    #log.info(this_item.get_bonus_csv())
+    #log.info(this_item.get_bonus_hash())
 
 #
 # This function returns a string containing XML compatible suitable to be 

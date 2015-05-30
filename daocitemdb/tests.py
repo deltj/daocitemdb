@@ -153,5 +153,5 @@ test_xml_string = """\
 class LokiXMLImportTest(TestCase):
     
     def test_loki_xml_import(self):
-        loki.read_item_from_xml(test_xml_string)
-        loki.read_item_from_xml(test_xml_string)
+        loki.import_item_from_xml(test_xml_string)
+        loki.import_item_from_xml(test_xml_string)
