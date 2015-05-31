@@ -114,9 +114,32 @@ def import_item_from_xml(xml_string):
     level_element = root.find(".//Level")
     this_item.level = level_element.text
     
+    # Note that Loki XML uses the term Location to define the place where
+    # an Item may be equipped.  I am using the term Slot to describe this
+    # same thing.  This is confusing, because Loki uses the term Slot to
+    # describe Spell Crafting bonuses.  e.g. an Item may have up to N SC
+    # bonuses, and Loki calls each on a Slot (see XML interpretation 
+    # below).  
+    #
+    # In short, daocitemdb usees the following terminology:
+    # Slot - the place where an Item may be equipped on a character
+    # Bonus - a single bonus attribute of an Item (e.g. +25 Dexterity)
+
     # locate the Location element to get this Item's slot
     location_element = root.find(".//Location")
-    this_item.slot = get_slot(location_element.text)
+    location_text = location_element.text
+
+    # perform some normalizations for consistency
+
+    # normalize "Left Wrist" or "Right Wrist" to "Wrist"
+    if(location_text == "Left Wrist" or location_text == "Right Wrist"):
+        location_text = "Wrist"
+
+    # normalize "Left Wrist" or "Right Wrist" to "Wrist"
+    if(location_text == "Left Ring" or location_text == "Right Ring"):
+        location_text = "Ring"
+
+    this_item.slot = get_slot(location_text)
     
     # save the item
     this_item.save()
