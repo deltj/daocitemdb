@@ -57,9 +57,14 @@ class ItemBonus(models.Model):
     
     # The amount of the bonus
     amount = models.SmallIntegerField(default=0)
-    
+
     def bonus_name(self):
         return self.bonus.name
+    
+    # This override provides a short, human-readable description
+    def __str__(self):
+        # return a meaningful description of this ItemBonus
+        return self.bonus_name() + " " + str(self.amount)
 
 # This model represents an Item.  An Item is an object in DAoC that may be 
 # equipped by a character.
