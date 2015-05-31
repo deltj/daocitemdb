@@ -160,6 +160,34 @@ def import_item_from_xml(xml_string):
     # get this item's hash
     #log.info(this_item.get_bonus_csv())
     #log.info(this_item.get_bonus_hash())
+    the_hash = this_item.get_bonus_hash()
+    log.info("hash: " + the_hash)
+
+	# look for duplicates by searching for items with the same hash value
+    duplicate_list = Item.objects.filter(hash=the_hash)
+    if(duplicate_list.count() > 0):
+        # If I've done this right... it shouldn't be possible or multiple items
+        # to have the same hash.
+
+        item_already_in_db = duplicate_list[0]
+
+        # increment confidence for the first item in the list
+        item_already_in_db.confidence += 1
+        item_already_in_db.save()
+
+        # delete this_item, since it's a dup
+        this_item.delete()
+
+        log.info("duplice found, updating confidence")
+    else:
+        this_item.hash = the_hash
+        this_item.save()
+
+        log.info("unique item found, adding to database")
+
+
+
+
 
 #
 # This function returns a string containing XML compatible suitable to be 
