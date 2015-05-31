@@ -1,0 +1,47 @@
+body {
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+a:link {
+	color: #000000;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #000000;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #000000;
+	text-decoration: underline;
+}
+
+a:active {
+	color: #000000;
+	text-decoration: none;
+}
+
+table#results {
+	border-collapse: collapse;
+	border: 1px solid #AAAAAA;
+}
+
+td#results {
+	border-top: 1px solid #AAAAAA;
+	border-bottom: 1px solid #AAAAAA;
+	padding: 3px;
+}
+
+td#show {
+	padding: 5px;
+}
+
+input {
+	border: 1px solid #AAAAAA;
+}
+
+select {
+	border: 1px solid #AAAAAA;
+}

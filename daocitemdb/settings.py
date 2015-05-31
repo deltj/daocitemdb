@@ -15,7 +15,11 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-LOG_FILE = os.path.join(BASE_DIR, 'log')
+#LOG_FILE = os.path.join(BASE_DIR, 'log')
+
+# static files like css and icons will be served from here
+#STATIC_ROOT = "/var/www/daocitemdb/static"
+STATIC_URL = "/static/"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -79,7 +83,7 @@ WSGI_APPLICATION = 'daocitemdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '/var/db/daocitemdb/daocitemdb.sqlite3'),
     }
 }
 
@@ -117,14 +121,14 @@ LOGGING = {
             'level':'DEBUG',
             'class':'django.utils.log.NullHandler',
         },
-        'logfile': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': LOG_FILE,
-            'maxBytes': 50000,
-            'backupCount': 2,
-            'formatter': 'standard',
-        },
+        #'logfile': {
+        #    'level':'DEBUG',
+        #    'class':'logging.handlers.RotatingFileHandler',
+        #    'filename': LOG_FILE,
+        #    'maxBytes': 50000,
+        #    'backupCount': 2,
+        #    'formatter': 'standard',
+        #},
         'console':{
             'level':'INFO',
             'class':'logging.StreamHandler',
@@ -143,7 +147,8 @@ LOGGING = {
             'propagate': False,
         },
         'daocitemdb': {
-            'handlers': ['console', 'logfile'],
+            #'handlers': ['console', 'logfile'],
+            'handlers': ['console'],
             'level': 'DEBUG',
         },
     }
