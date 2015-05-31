@@ -7,28 +7,23 @@
 function doSearch() {
 	console.log("in doSearch");
 
-	// figure out what the user typed in for the name
 	var itemname = document.getElementById("itemname").value;
-	//console.log(itemname);
 
-	// figure out what the user selected for the first bonus
-	//var bonus1id = document.getElementById("bonus1").selectedIndex;
-	//console.log(bonus1id);
+	var slot = document.getElementById("slot").value;
 
-	//var slot = document.getElementById("slot").value;
+	var bonus1id = document.getElementById("bonus1").selectedIndex;
 
 	// if the form is empty, clear the result table
-	//if(slot.length == 0 && bonus1id == 0 && itemname.length == 0) {
-	if(itemname.length == 0) {
+	if(itemname.length == 0 && slot.length == 0 && bonus1id == 0) {
 		//console.log("clearing result table");
 
 		// get a handle to the result table
-		//var table = document.getElementById("results");
+		var table = document.getElementById("results");
 
 		// form is empty, clear the table
-		//for(var j=table.rows.length-1; j>=0; j--) {
-			//table.deleteRow(j);
-		//}
+		for(var j=table.rows.length-1; j>=0; j--) {
+			table.deleteRow(j);
+		}
 	}
 	
 	// form has data, do the search!
@@ -86,19 +81,19 @@ function searchCallback(data, status) {
 
 // this function clears the form
 function clearForm() {
-	//var slot = document.getElementById("slot");
-	//slot.options[0].selected = true;
+	var slot = document.getElementById("slot");
+	slot.options[0].selected = true;
 
-	//var bonus1 = document.getElementById("bonus1");
-	//bonus1.options[0].selected = true;
+	var bonus1 = document.getElementById("bonus1");
+	bonus1.options[0].selected = true;
 
 	var itemname = document.getElementById("itemname");
 	itemname.value = "";
 
-	//var table = document.getElementById("results");
-	//for(var j=table.rows.length-1; j>=0; j--) {
-	//	table.deleteRow(j);
-	//}
+	var table = document.getElementById("results");
+	for(var j=table.rows.length-1; j>=0; j--) {
+		table.deleteRow(j);
+    }
 }
 
 // perform some initialization stuff after the document is loaded
@@ -108,8 +103,11 @@ $(document).ready(function() {
 	// the control to lose focus.
 	document.getElementById("itemname").onkeyup = function() {doSearch()};
 
-	//document.getElementById("bonus1").onchange = function() {doSearch()};
-	//document.getElementById("slot").onchange = function() {doSearch()};
+    // add handlers for changes to the drop-down boxes
+	document.getElementById("slot").onchange = function() {doSearch()};
+	document.getElementById("bonus1").onchange = function() {doSearch()};
+
+    // add a handler for the clear button
 	document.getElementById("clear").onclick = function() {clearForm()};
 });
 </script>
@@ -129,18 +127,25 @@ $(document).ready(function() {
 <select name="slot" id="slot">
 <option value="">-</option>
 {% if slot_list %}
-<!-- slot_list found -->
 {% for slot in slot_list %}
-<option value="{{ slot.name }}">{{ slot.name }}</option>
+<option value="{{ slot.id }}">{{ slot.name }}</option>
 {% endfor %}
-{% else %}
-<!-- no slot_list in context!!!! -->
 {% endif %}
 </select>
 </td> </tr>
 
-<!-- something... -->
-<tr><td>Something:</td><td><input type="text" name="something" id="something"></td></tr>
+<!-- bonus 1-->
+<tr><td>Bonus:</td>
+<td>
+<select name="bonus1" id="bonus1">
+<option value="">-</option>
+{% if bonus_list %}
+{% for bonus in bonus_list %}
+<option value="{{ bonus.id }}">{{ bonus.name }}</option>
+{% endfor %}
+{% endif %}
+</select>
+</td> </tr>
 </table>
 <button type="button" id="clear">Clear</button>
 </form>

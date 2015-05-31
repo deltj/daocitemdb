@@ -72,9 +72,11 @@ def searchform(request):
     # get a list of Slots
     slot_list = Slot.objects.all()
 
+    # get a list of Bonuses
+    bonus_list = Bonus.objects.all()
+
     # set up context
-    #context = dict()
-    context = {"slot_list" : slot_list}
+    context = {"slot_list" : slot_list, "bonus_list" : bonus_list}
 
     # render output
     return render(request, "searchform.html", context)
@@ -86,21 +88,41 @@ def searchform(request):
 def search(request):
     #log.info("search being requested!")
     
-    # get the item name
-    item_name = request.GET['itemname']
+    # get the specified item name
+    item_name = request.GET.get("itemname", None)
     log.debug("item_name: " + item_name)
     
-    json_result = ""
+    # get the specified slot
+    slot_id = request.GET.get("slot", None)
+    log.debug("slot_id : " + slot_id)
+
+    # get the first specified bonus
+    bonus1_id = request.GET.get("bonus1", None)
+    log.debug("bonus1_id: " + bonus1_id)
     
-    # get a filtered list of Items
-    if item_name:
-        # this will yield a QuerySet of objects matching the search parameters
-        item_list = Item.objects.filter(name__startswith=item_name)
-        
-        # we need to serialize the QuerySet to JSON
-        json_result = serializers.serialize("json", item_list)
-        #log.debug("item_list: " + item_list.__str__())
-        #log.debug("some_json: " + json_result)
+    # start with the entire list, and we'll filter it down based on the 
+    # search criteria
+    item_list = Item.objects.all()
+
+    # filter by name
+    if item_name and item_name != "":
+        item_list = item_list.filter(name__startswith=item_name)
+
+    # filter by slot
+    if slot_id:
+        the_slot = Slot.objects.get(pk=slot_id)
+        if the_slot:
+            item_list = item_list.filter(slot=the_slot)
+
+    if bonus1_id:
+       bonus1 = Bonus.objects.get(pk=bonus1_id)
+
+    json_result = ""
+
+    # we need to serialize the QuerySet to JSON
+    json_result = serializers.serialize("json", item_list)
+    #log.debug("item_list: " + item_list.__str__())
+    #log.debug("some_json: " + json_result)
     
     # return the search result
     #return JsonResponse({'foo':'bar'})
