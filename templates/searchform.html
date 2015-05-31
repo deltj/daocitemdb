@@ -119,7 +119,27 @@ $(document).ready(function() {
 <!-- this is the search form that will be used to enter query parameters -->
 <form>
 <table>
+
+<!-- name -->
 <tr><td>Name:</td><td><input type="text" name="itemname" id="itemname"></td></tr>
+
+<!-- slot -->
+<tr><td>Slot:</td>
+<td>
+<select name="slot" id="slot">
+<option value="">-</option>
+{% if slot_list %}
+<!-- slot_list found -->
+{% for slot in slot_list %}
+<option value="{{ slot.name }}">{{ slot.name }}</option>
+{% endfor %}
+{% else %}
+<!-- no slot_list in context!!!! -->
+{% endif %}
+</select>
+</td> </tr>
+
+<!-- something... -->
 <tr><td>Something:</td><td><input type="text" name="something" id="something"></td></tr>
 </table>
 <button type="button" id="clear">Clear</button>

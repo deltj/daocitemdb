@@ -23,7 +23,7 @@
 #-------------------------------------------------------------------------------
 from django.shortcuts import render
 
-from .models import Item, ItemBonus
+from .models import Item, Slot, Bonus, ItemBonus
 from django.http import HttpResponse
 from django.core import serializers
 import logging
@@ -69,9 +69,15 @@ def showitem(request):
 def searchform(request):
     #log.debug("searchform being requested!")
     
+    # get a list of Slots
+    slot_list = Slot.objects.all()
+
+    # set up context
+    #context = dict()
+    context = {"slot_list" : slot_list}
+
     # render output
-    context = dict()
-    return render(request, 'searchform.html', context)
+    return render(request, "searchform.html", context)
 
 #
 # This view accepts query parameters from the search form, performs the query,
