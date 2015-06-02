@@ -105,13 +105,10 @@ class Item(models.Model):
     # Generate a CSV representation of the bonuses for this item.
     def get_bonus_csv(self):
         
-        # get the bonus list for this item
-        bonus_list = self.bonuses.all()
-        
         # generate the csv
         csv_string = ""
-        for bonus in bonus_list:
-            csv_string += bonus.bonus_name() + "," + str(bonus.amount) + ","
+        for item_bonus in self.itembonus_set.all():
+            csv_string += item_bonus.bonus.name + "," + str(item_bonus.amount) + ","
             
         return csv_string
     
