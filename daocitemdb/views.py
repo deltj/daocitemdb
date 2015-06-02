@@ -102,20 +102,37 @@ def search(request):
     
     # start with the entire list, and we'll filter it down based on the 
     # search criteria
-    item_list = Item.objects.all()
+    #item_list = Item.objects.all()
+    item_bonus_list = ItemBonus.objects.all()
 
     # filter by name
     if item_name and item_name != "":
-        item_list = item_list.filter(name__startswith=item_name)
+        item_bonus_list = item_bonus_list.filter(item__name__startswith=item_name)
 
     # filter by slot
     if slot_id:
         the_slot = Slot.objects.get(pk=slot_id)
         if the_slot:
-            item_list = item_list.filter(slot=the_slot)
+            item_bonus_list = item_bonus_list.filter(item__slot__id=slot_id)
 
+    # filter by first bonus
     if bonus1_id:
-       bonus1 = Bonus.objects.get(pk=bonus1_id)
+        bonus1 = Bonus.objects.get(pk=bonus1_id)
+        if(bonus1):
+            item_bonus_list = item_bonus_list.filter(bonus=bonus1)
+
+    # chop the list down to distinct items (currently it contains a row for
+    # each bonus in each matching item)
+    #item_list.distinct("item__name")
+
+    # it seems that distinct() does not work with the sqlite backend.  As a 
+    # workaround, we'll copy the distinct items to a new list.
+    item_list = []
+    seen_item_ids = []
+    for bonus in item_bonus_list:
+        if(bonus.item.id not in seen_item_ids):
+            seen_item_ids.append(bonus.item.id)
+            item_list.append(bonus.item)
 
     json_result = ""
 
