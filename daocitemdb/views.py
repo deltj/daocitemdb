@@ -53,14 +53,11 @@ def showitem(request):
     iid = request.GET["id"];
     #log.info(id)
     
-    # get a list of Items with the specified id (there can only be one)
+    # get the Item with the specified id
     item = Item.objects.get(pk=iid)
     
-    # get the bonus list for this item
-    bonus_list = ItemBonus.objects.filter(item_id=iid)
-    
     # render output
-    context = {"item" : item, "bonus_list" : bonus_list}
+    context = {"item" : item}
     return render(request, "showitem.html", context)
     
 #
@@ -100,26 +97,36 @@ def search(request):
     bonus1_id = request.GET.get("bonus1", None)
     log.debug("bonus1_id: " + bonus1_id)
     
+    # get the second specified bonus
+    bonus2_id = request.GET.get("bonus2", None)
+    log.debug("bonus2_id: " + bonus2_id)
+    
     # start with the entire list, and we'll filter it down based on the 
     # search criteria
     #item_list = Item.objects.all()
-    item_bonus_list = ItemBonus.objects.all()
+    item_list = Item.objects.all()
 
     # filter by name
     if item_name and item_name != "":
-        item_bonus_list = item_bonus_list.filter(item__name__startswith=item_name)
+        item_list = item_list.filter(name__startswith=item_name)
 
     # filter by slot
     if slot_id:
         the_slot = Slot.objects.get(pk=slot_id)
         if the_slot:
-            item_bonus_list = item_bonus_list.filter(item__slot__id=slot_id)
+            item_list = item_list.filter(slot=the_slot)
 
     # filter by first bonus
     if bonus1_id:
         bonus1 = Bonus.objects.get(pk=bonus1_id)
         if(bonus1):
-            item_bonus_list = item_bonus_list.filter(bonus=bonus1)
+            item_list = item_list.filter(bonuses=bonus1)
+
+    # filter by second bonus
+    if bonus2_id:
+        bonus2 = Bonus.objects.get(pk=bonus2_id)
+        if(bonus2):
+            item_list = item_list.filter(bonuses=bonus2)
 
     # chop the list down to distinct items (currently it contains a row for
     # each bonus in each matching item)
@@ -127,12 +134,12 @@ def search(request):
 
     # it seems that distinct() does not work with the sqlite backend.  As a 
     # workaround, we'll copy the distinct items to a new list.
-    item_list = []
-    seen_item_ids = []
-    for bonus in item_bonus_list:
-        if(bonus.item.id not in seen_item_ids):
-            seen_item_ids.append(bonus.item.id)
-            item_list.append(bonus.item)
+    #item_list = []
+    #seen_item_ids = []
+    #for item_bonus in combined_item_bonus_list:
+    #    if(item_bonus.item.id not in seen_item_ids):
+    #        seen_item_ids.append(item_bonus.item.id)
+    #        item_list.append(item_bonus.item)
 
     json_result = ""
 

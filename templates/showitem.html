@@ -15,11 +15,9 @@
 <tr><td id="show">Confidence</td><td>{{ item.confidence }}</td></tr>
 <tr><td id="show">Bonuses</td>
 <td>
-{% if bonus_list %}
-{% for bonus in bonus_list %}
-{{ bonus.bonus_name }}: {{ bonus.amount }}<br/>
+{% for item_bonus in item.itembonus_set.all %}
+{{ item_bonus.bonus.name }}: {{ item_bonus.amount }}<br/>
 {% endfor %}
-{% endif %}
 </td>
 </tr>
 </table>

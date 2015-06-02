@@ -58,9 +58,6 @@ class ItemBonus(models.Model):
     # The amount of the bonus
     amount = models.SmallIntegerField(default=0)
 
-    def bonus_name(self):
-        return self.bonus.name
-    
     # This override provides a short, human-readable description
     def __str__(self):
         # return a meaningful description of this ItemBonus
@@ -85,6 +82,9 @@ class Item(models.Model):
     # The item's level
     level = models.SmallIntegerField(default=0)
     
+    # The item's bonuses
+    bonuses = models.ManyToManyField(Bonus, through="ItemBonus", related_name="bonuses")
+
     # A hash value that (hopefully) uniquely identifies this item (used to 
     # prevent duplicate items from being added to the database)
     hash = models.CharField(max_length=33, default="")
@@ -106,7 +106,7 @@ class Item(models.Model):
     def get_bonus_csv(self):
         
         # get the bonus list for this item
-        bonus_list = ItemBonus.objects.filter(item_id=self.id).order_by("bonus__name")
+        bonus_list = self.bonuses.all()
         
         # generate the csv
         csv_string = ""
