@@ -1,0 +1,24 @@
+{% load staticfiles %}
+<!DOCTYPE HTML>
+<html>
+<head>
+<link rel="stylesheet" href="{% static "css.css" %}" type="text/css">
+
+{% block head %}{% endblock %}
+
+</head>
+<body>
+
+<div id="header">
+<div id="logo"> <!--<img src="{% static "daocitemdb.png" %}" /> --> </div>
+<div id="tag">daocitemdb</div>
+</div>
+
+<div id="wrapper">
+
+{% block content %}{% endblock %}
+
+</div>
+
+</body>
+</html>

@@ -1,47 +1,111 @@
-body {
-	color: #000000;
-	background-color: #FFFFFF;
+/* Style for all elements */
+*{
+    margin: 0;
+    padding: 0;
+    font-family: "Arial Black", Gadget, sans-serif;
+    font-style: normal;
+    font-size: 100%;
 }
 
+/* Is this doing what I really want it to do? */
+.clear {
+    clear: both;
+}
+
+/* Body element style */
+body {
+    font-family: "Helvetica";
+	color: #000000;
+	background-color: #ffffff;
+}
+
+/* the header element holds the logo and title text */
+#header {
+    width: 600px;
+    margin: 0 auto;
+    padding-bottom: 10px;
+}
+
+/* the logo element holds the logo graphic */
+#logo {
+    float: left;
+}
+
+/* tag element is used as part of the header line */
+#tag {
+    background-color: #ffffff;
+    float: right;
+    font-size: 120%;
+    text-align: center;
+}
+
+/* this tag wraps the result list table */
+#wrapper {
+    clear: both;
+    color: #000000;
+    background-color: #ffffff;
+    width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* links */
 a:link {
 	color: #000000;
 	text-decoration: none;
 }
 
+/* visited links */
 a:visited {
 	color: #000000;
 	text-decoration: none;
 }
 
-a:hover {
-	color: #000000;
-	text-decoration: underline;
-}
-
+/* active links (what does that mean?) */
 a:active {
 	color: #000000;
 	text-decoration: none;
 }
 
+/* hovered links */
+a:hover {
+	color: #000000;
+	text-decoration: underline;
+}
+
+/* style for the search form table */
+table#searchform {
+    margin: 0 auto;
+    margin-bottom: 25px;
+	border: 0;
+}
+
+/* style for the results table */
 table#results {
+    margin: 0 auto;
 	border-collapse: collapse;
 	border: 1px solid #AAAAAA;
 }
 
+/* style for table cells within the results table */
 td#results {
 	border-top: 1px solid #AAAAAA;
 	border-bottom: 1px solid #AAAAAA;
 	padding: 3px;
+    text-align: left;
 }
 
+/* i forget what this is */
 td#show {
 	padding: 5px;
 }
 
+/* input box style */
 input {
 	border: 1px solid #AAAAAA;
 }
 
+/* select box style */
 select {
 	border: 1px solid #AAAAAA;
 }

@@ -1,29 +1,26 @@
-<!doctype HTML>
-<html>
-<head>
-<link rel="stylesheet" href="css.css" type="text/css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
 
 {% if item %}
-<table id="results">
-<tr><td id="show">Name</td><td>{{ item.name }}</td></tr>
-<tr><td id="show">Realm</td><td>{{ item.realm }}</td></tr>
-<tr><td id="show">Slot</td><td>{{ item.slot }}</td></tr>
-<tr><td id="show">Level</td><td>{{ item.level }}</td></tr>
-<tr><td id="show">Hash</td><td>{{ item.hash }}</td></tr>
-<tr><td id="show">Confidence</td><td>{{ item.confidence }}</td></tr>
-<tr><td id="show">Bonuses</td>
-<td>
-{% for item_bonus in item.itembonus_set.all %}
-{{ item_bonus.bonus.name }}: {{ item_bonus.amount }}<br/>
-{% endfor %}
-</td>
-</tr>
-</table>
+    <table id="results">
+    <tr><td id="show">Name</td><td>{{ item.name }}</td></tr>
+    <tr><td id="show">Realm</td><td>{{ item.realm }}</td></tr>
+    <tr><td id="show">Slot</td><td>{{ item.slot }}</td></tr>
+    <tr><td id="show">Level</td><td>{{ item.level }}</td></tr>
+    <tr><td id="show">Hash</td><td>{{ item.hash }}</td></tr>
+    <tr><td id="show">Confidence</td><td>{{ item.confidence }}</td></tr>
+    <tr><td id="show">Bonuses</td>
+        <td>
+        {% for item_bonus in item.itembonus_set.all %}
+            {{ item_bonus.bonus.name }}: {{ item_bonus.amount }}<br/>
+        {% endfor %}
+        </td>
+    </tr>
+    </table>
 {% else %}
-You are Wrong.
+    You are Wrong.
 {% endif %}
 
-</body>
-</html> 
+{% endblock %}
+

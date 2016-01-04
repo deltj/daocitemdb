@@ -1,6 +1,6 @@
-<!DOCTYPE HTML>
-<html>
-<head>
+{% extends "base.html" %}
+
+{% block head %}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
 // do the search
@@ -117,12 +117,13 @@ $(document).ready(function() {
 	document.getElementById("clear").onclick = function() {clearForm()};
 });
 </script>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
 
 <!-- this is the search form that will be used to enter query parameters -->
 <form>
-<table>
+<table id="searchform">
 
 <!-- name -->
 <tr><td>Name:</td><td><input type="text" name="itemname" id="itemname"></td></tr>
@@ -166,10 +167,13 @@ $(document).ready(function() {
 </select>
 </td></tr>
 
+<!-- clear form button -->
+<tr><td colspan="2">
+<button type="button" id="clear">Clear</button>
+</td></tr>
+
 </table>
 
-<!-- clear form button -->
-<button type="button" id="clear">Clear</button>
 
 </form>
 
@@ -177,5 +181,4 @@ $(document).ready(function() {
 <table id="results">
 </table>
 
-</body>
-</html>
+{% endblock %}

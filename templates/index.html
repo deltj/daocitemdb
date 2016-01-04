@@ -1,20 +1,20 @@
-{% load staticfiles %}
-<!DOCTYPE HTML>
-<html>
-<link rel="stylesheet" href="{% static "css.css" %}" type="text/css">
-<body>
+{% extends "base.html" %}
+
+{% block content %}
 
 {% if item_list %}
 	There are {{ item_list|length }} Items in the database.
-    <table border="1">
-    <tr><td>id</td><td>name</td></tr>
+    <table id="results">
+    <tr><td id="results">id</td><td id="results">name</td></tr>
     {% for item in item_list %}
-        <tr><td>{{ item.id }}</td><td><a href="showitem?id={{ item.id }}">{{ item.name }}</a></td></tr>
+        <tr>
+        <td id="results">{{ item.id }}</td>
+        <td id="results"><a href="showitem?id={{ item.id }}">{{ item.name }}</a></td>
+        </tr>
     {% endfor %}
     </table>
 {% else %}
     <p>No items.</p>
 {% endif %}
 
-<body>
-<html>
+{% endblock %}
