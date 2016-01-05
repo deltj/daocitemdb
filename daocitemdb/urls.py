@@ -12,7 +12,8 @@ urlpatterns = [
     url(r'^$', views.index),
     url(r'^searchform', views.searchform),
     url(r'^search', views.search),
-    url(r'^showitem', views.showitem)
+    url(r'^showitem', views.showitem),
+    url(r'^lokixml', views.lokixml)
 ]
 
 urlpatterns += staticfiles_urlpatterns()

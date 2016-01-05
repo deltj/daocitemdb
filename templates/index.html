@@ -5,12 +5,17 @@
 {% if item_list %}
 	There are {{ item_list|length }} Items in the database.
     <table id="results">
-    <tr><td id="results">id</td><td id="results">name</td></tr>
+    <tr>
+        <td id="results">id</td>
+        <td id="results">name</td>
+        <td id="results"></td>
+    </tr>
     {% for item in item_list %}
         <tr>
         <td id="results">{{ item.id }}</td>
         <td id="results"><a href="showitem?id={{ item.id }}">{{ item.name }}</a></td>
-        </tr>
+        <td id="results"><a href="lokixml?id={{ item.id }}">xml</a></td>
+    </tr>
     {% endfor %}
     </table>
 {% else %}

@@ -27,6 +27,7 @@ from .models import Item, Slot, Bonus, ItemBonus
 from django.http import HttpResponse
 from django.core import serializers
 import logging
+from daocitemdb import loki
 
 # set up the logger
 log = logging.getLogger(__name__)
@@ -59,6 +60,24 @@ def showitem(request):
     # render output
     context = {"item" : item}
     return render(request, "showitem.html", context)
+
+#
+# This view emits Loki XML for the specified item id
+#
+def lokixml(request):
+    #log.info("Loki XML being requested!")
+
+    # get the item id
+    iid = request.GET["id"];
+
+    # get the Item with the specified id
+    item = Item.objects.get(pk=iid)
+
+    # get Loki XML for this item
+    response = HttpResponse(content_type="application/xml")
+    response.write(loki.write_item_to_xml(item));
+    return response;
+
     
 #
 # This view renders the search form

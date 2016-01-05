@@ -216,103 +216,111 @@ def import_item_from_xml(xml_string):
 # This function returns a string containing XML compatible suitable to be 
 # imported into Loki
 #
-'''
+
 def write_item_to_xml(item):
     
     scitem = ET.Element('SCItem')
-    
-    activity_state = SubElement(scitem, "ActiveState")
+
+    activity_state = ET.SubElement(scitem, "ActiveState")
     activity_state.text = "drop"
     
-    location = SubElement(scitem, "Location")
-    location.text = item.location
+    location = ET.SubElement(scitem, "Location")
+    slot = item.slot.__str__()
+    if(slot == "Wrist"):
+        slot = "Left Wrist"
+
+    location.text = slot
     
-    realm = SubElement(scitem, "Realm")
+    realm = ET.SubElement(scitem, "Realm")
     realm.text = item.realm
     
-    item_name = SubElement(scitem, "ItemName")
+    item_name = ET.SubElement(scitem, "ItemName")
     item_name.text = item.name
     
-    afdps = SubElement(scitem, "AFDPS")
+    afdps = ET.SubElement(scitem, "AFDPS")
     afdps.text = "16.5"
     
-    bonus = SubElement(scitem, "Bonus")
+    bonus = ET.SubElement(scitem, "Bonus")
     bonus.text = "0"
     
-    item_quality = SubElement(scitem, "ItemQuality")
+    item_quality = ET.SubElement(scitem, "ItemQuality")
     item_quality.text = "100"
     
-    equipped = SubElement(scitem, "Equipped")
+    equipped = ET.SubElement(scitem, "Equipped")
     equipped.text = "1"
     
-    level = SubElement(scitem, "Level")
+    level = ET.SubElement(scitem, "Level")
     level.text = "50"
     
-    offhand = SubElement(scitem, "OFFHAND")
+    offhand = ET.SubElement(scitem, "OFFHAND")
     offhand.text = "no"
     
-    source = SubElement(scitem, "SOURCE")
+    source = ET.SubElement(scitem, "SOURCE")
     source.text = "drop"
     
-    type = SubElement(scitem, "TYPE")
-    type.text = "Unspecified"
+#    type = ET.SubElement(scitem, "TYPE")
+#    type.text = "Unspecified"
+
+#    damage_type = ET.SubElement(scitem, "DAMAGETYPE")
+#    damage_type.text = "Thrust"
     
-    damage_type = SubElement(scitem, "DAMAGETYPE")
-    damage_type.text = "Thrust"
+#    speed = ET.SubElement(scitem, "Speed")
+#    speed.text = "4.0"
     
-    speed = SubElement(scitem, "Speed")
-    speed.text = "4.0"
-    
-    dbsource = SubElement(scitem, "DBSOURCE")
+    dbsource = ET.SubElement(scitem, "DBSOURCE")
     dbsource.text = "LOKI"
     
-    class_restrictions = SubElement(scitem, "CLASSRESTRICTIONS")
-    class_ = SubElement(class_restrictions, "CLASS")
+    class_restrictions = ET.SubElement(scitem, "CLASSRESTRICTIONS")
+    class_ = ET.SubElement(class_restrictions, "CLASS")
     class_.text = "All"
     
-    is_unique = SubElement(scitem, "ISUNIQUE")
+    is_unique = ET.SubElement(scitem, "ISUNIQUE")
     is_unique.text = "0"
     
-    oracle_ignore = SubElement(scitem, "ORACLE_IGNORE")
+    oracle_ignore = ET.SubElement(scitem, "ORACLE_IGNORE")
     oracle_ignore.text = "0"
     
-    user_value = SubElement(scitem, "USER_VALUE")
+    user_value = ET.SubElement(scitem, "USER_VALUE")
     user_value.text = "0"
     
-    variant = SubElement(scitem, "VARIANT")
+    variant = ET.SubElement(scitem, "VARIANT")
 
-    associate = SubElement(scitem, "ASSOCIATE", {"IsParent":"0"})
+    associate = ET.SubElement(scitem, "ASSOCIATE", {"IsParent":"0"})
     
-    equiplist = SubElement(scitem, "EQUIPLIST")
-    equip_slot = SubElement(equiplist, "SLOT", {"NAME":"Right Hand"})
-    equip_slot.text = "true"
+    equiplist = ET.SubElement(scitem, "EQUIPLIST")
+
+    if(slot == "Left Wrist"):
+        equip_slot1 = ET.SubElement(equiplist, "SLOT", {"NAME":"Left Wrist"})
+        equip_slot1.text = "true"
+        equip_slot2 = ET.SubElement(equiplist, "SLOT", {"NAME":"Right Wrist"})
+        equip_slot2.text = "true"
     
-    dropitem = SubElement(scitem, "DROPITEM")
+    dropitem = ET.SubElement(scitem, "DROPITEM")
         
     for slot_num in range(10):
-        slot = SubElement(dropitem, "SLOT", {"Number":str(slot_num)})
+        slot = ET.SubElement(dropitem, "SLOT", {"Number":str(slot_num)})
     
-        remakes = SubElement(slot, "Remakes")
+        remakes = ET.SubElement(slot, "Remakes")
         remakes.text = "0"
         
-        effect = SubElement(slot, "Effect")
+        effect = ET.SubElement(slot, "Effect")
         effect.text = "Dexterity"
         
-        quality = SubElement(slot, "Qua")
+        quality = ET.SubElement(slot, "Qua")
         quality.text = "99"
         
-        amount = SubElement(slot, "Amount")
+        amount = ET.SubElement(slot, "Amount")
         amount.text = "3"
         
-        done = SubElement(slot, "Done")
+        done = ET.SubElement(slot, "Done")
         done.text = "0"
         
-        time = SubElement(slot, "Time")
+        time = ET.SubElement(slot, "Time")
         time.text = "0"
         
-        type = SubElement(slot, "Type")
+        type = ET.SubElement(slot, "Type")
         type.text = "Stat" 
     
     # return a nicely formatted XML string
     return prettify(scitem)
-'''
+
