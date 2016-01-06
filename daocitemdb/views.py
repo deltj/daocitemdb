@@ -38,10 +38,22 @@ log = logging.getLogger(__name__)
 def index(request):
     #log.debug("index being requested!")
     
-    item_list = Item.objects.all()
+    #item_list = Item.objects.all()
     
     # render output
-    context = {'item_list' : item_list}
+    #context = {'item_list' : item_list}
+    
+    # get a list of Slots
+    slot_list = Slot.objects.all()
+
+    # get a list of Bonuses
+    bonus_list = Bonus.objects.all()
+
+    # set up context
+    context = {"slot_list" : slot_list, "bonus_list" : bonus_list}
+
+    # render output
+    #return render(request, "searchform.html", context)
     return render(request, 'index.html', context)
 
 #
@@ -73,9 +85,14 @@ def lokixml(request):
     # get the Item with the specified id
     item = Item.objects.get(pk=iid)
 
-    # get Loki XML for this item
+    # get Loki XML for this item, and make an HttpResponse from it
     response = HttpResponse(content_type="application/xml")
     response.write(loki.write_item_to_xml(item));
+    filename = item.name
+    filename = filename.replace("'", "")
+    filename = filename.replace(" ", "_") + ".xml"
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
     return response;
 
     

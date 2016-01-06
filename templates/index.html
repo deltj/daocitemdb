@@ -1,25 +1,184 @@
 {% extends "base.html" %}
 
+{% block head %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+// do the search
+function doSearch() {
+	console.log("in doSearch");
+
+	var itemname = document.getElementById("itemname").value;
+
+	var slot = document.getElementById("slot").value;
+
+	var bonus1id = document.getElementById("bonus1").selectedIndex;
+
+	var bonus2id = document.getElementById("bonus2").selectedIndex;
+
+	// if the form is empty, clear the result table
+	if(itemname.length == 0 && slot.length == 0 && bonus1id == 0 && bonus2id == 0) {
+		//console.log("clearing result table");
+
+		// get a handle to the result table
+		var table = document.getElementById("results");
+
+		// form is empty, clear the table
+		for(var j=table.rows.length-1; j>=0; j--) {
+			table.deleteRow(j);
+		}
+	}
+	
+	// form has data, do the search!
+	else {
+		// serialize the search parameters so they can be sent to the 
+		// back end search processor
+		var searchparams = $("form").serialize();
+		console.log(searchparams);
+
+		// post the search parameters to search.php.  if matching items
+	   	// are found, the result will be an array of JSON objects.
+		$.get("search", searchparams, searchCallback);
+	}
+}
+
+// this function will be called by jQuery.post if the request succeeds.  It will
+// examine the result from search.php and display the result.
+//
+// @param data			the response data from search.php
+// @param status		the status of the HTTP Post
+function searchCallback(data, status) {
+	console.log("in searchCallback");
+	console.log(data);
+
+	// parse the JSON result so it can be displayed
+	var result = $.parseJSON(data);
+	//console.log(result.length);
+	//console.log(result[0].pk);
+
+	// get a handle to the result table
+	var table = document.getElementById("results");
+
+	// first delete all rows from the table
+	for(var j=table.rows.length-1; j>=0; j--) {
+		table.deleteRow(j);
+	}
+
+	// loop through the array of objects
+	for(var i=0; i<result.length; i++) {
+		//console.log(result[i].pk);
+		//console.log(result[i].fields["name"]);
+
+		// append a row to the table (-1 means insert the new row at the end)
+		var row = table.insertRow(-1);
+
+		// add a cell to the row for this item
+		var cell = row.insertCell(0);
+		cell.innerHTML = "<a href=\"showitem.php?id=" +
+			result[i].pk + "\">" + result[i].fields["name"] +
+			"</a>";
+		cell.className="results";
+		cell.setAttribute("id","results");
+	}
+}
+
+// this function clears the form
+function clearForm() {
+	var slot = document.getElementById("slot");
+	slot.options[0].selected = true;
+
+	var bonus1 = document.getElementById("bonus1");
+	bonus1.options[0].selected = true;
+
+	var bonus2 = document.getElementById("bonus2");
+	bonus2.options[0].selected = true;
+
+	var itemname = document.getElementById("itemname");
+	itemname.value = "";
+
+	var table = document.getElementById("results");
+	for(var j=table.rows.length-1; j>=0; j--) {
+		table.deleteRow(j);
+    }
+}
+
+// perform some initialization stuff after the document is loaded
+$(document).ready(function() {
+	// add a handler to the itemname textbox's keyup event.  this is a 
+	// better event to use than change, because it doesn't require 
+	// the control to lose focus.
+	document.getElementById("itemname").onkeyup = function() {doSearch()};
+
+    // add handlers for changes to the drop-down boxes
+	document.getElementById("slot").onchange = function() {doSearch()};
+	document.getElementById("bonus1").onchange = function() {doSearch()};
+	document.getElementById("bonus2").onchange = function() {doSearch()};
+
+    // add a handler for the clear button
+	document.getElementById("clear").onclick = function() {clearForm()};
+});
+</script>
+{% endblock %}
+
 {% block content %}
 
-{% if item_list %}
-	There are {{ item_list|length }} Items in the database.
-    <table id="results">
-    <tr>
-        <td id="results">id</td>
-        <td id="results">name</td>
-        <td id="results"></td>
-    </tr>
-    {% for item in item_list %}
-        <tr>
-        <td id="results">{{ item.id }}</td>
-        <td id="results"><a href="showitem?id={{ item.id }}">{{ item.name }}</a></td>
-        <td id="results"><a href="lokixml?id={{ item.id }}">xml</a></td>
-    </tr>
-    {% endfor %}
-    </table>
-{% else %}
-    <p>No items.</p>
+<!-- this is the search form that will be used to enter query parameters -->
+<form>
+<table id="searchform">
+
+<!-- name -->
+<tr><td>Name:</td><td><input type="text" name="itemname" id="itemname"></td></tr>
+
+<!-- slot -->
+<tr><td>Slot:</td>
+<td>
+<select name="slot" id="slot">
+<option value="">-</option>
+{% if slot_list %}
+{% for slot in slot_list %}
+<option value="{{ slot.id }}">{{ slot.name }}</option>
+{% endfor %}
 {% endif %}
+</select>
+</td></tr>
+
+<!-- bonus 1-->
+<tr><td>Bonus:</td>
+<td>
+<select name="bonus1" id="bonus1">
+<option value="">-</option>
+{% if bonus_list %}
+{% for bonus in bonus_list %}
+<option value="{{ bonus.id }}">{{ bonus.name }}</option>
+{% endfor %}
+{% endif %}
+</select>
+</td></tr>
+
+<!-- bonus 2-->
+<tr><td>Bonus:</td>
+<td>
+<select name="bonus2" id="bonus2">
+<option value="">-</option>
+{% if bonus_list %}
+{% for bonus in bonus_list %}
+<option value="{{ bonus.id }}">{{ bonus.name }}</option>
+{% endfor %}
+{% endif %}
+</select>
+</td></tr>
+
+<!-- clear form button -->
+<tr><td colspan="2">
+<button type="button" id="clear">Clear</button>
+</td></tr>
+
+</table>
+
+
+</form>
+
+<!-- this table will display the query result -->
+<table id="results">
+</table>
 
 {% endblock %}
